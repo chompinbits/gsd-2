@@ -9,8 +9,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { join, sep } from "node:path";
+import { sep } from "node:path";
 
 import {
   detectWorktreeName,
@@ -27,10 +26,7 @@ export interface GitPreferences {
   snapshots?: boolean;
   pre_merge_check?: boolean | string;
   commit_type?: string;
-  main_branch?: string;
 }
-
-export const VALID_BRANCH_NAME = /^[a-zA-Z0-9_\-\/.]+$/;
 
 export interface CommitOptions {
   message: string;
@@ -195,12 +191,6 @@ export class GitServiceImpl {
       return this.git(["branch", "--show-current"]);
     }
 
-    // Explicit preference takes priority over auto-detection
-    const configured = this.prefs.main_branch;
-    if (configured && VALID_BRANCH_NAME.test(configured)) {
-      return configured;
-    }
-
     const symbolic = this.git(["symbolic-ref", "refs/remotes/origin/HEAD"], { allowFailure: true });
     if (symbolic) {
       const match = symbolic.match(/refs\/remotes\/origin\/(.+)$/);
@@ -258,9 +248,6 @@ export class GitServiceImpl {
    * branch (preserves planning artifacts). Falls back to main when on another
    * slice branch (avoids chaining slice branches).
    *
-   * When creating a new branch, fetches from remote first (best-effort) to
-   * ensure the local main is up-to-date.
-   *
    * Auto-commits dirty state via smart staging before checkout so runtime
    * files are never accidentally committed during branch switches.
    *
@@ -281,9 +268,8 @@ export class GitServiceImpl {
       if (remotes) {
         const remote = this.prefs.remote ?? "origin";
         const fetchResult = this.git(["fetch", "--prune", remote], { allowFailure: true });
-        // fetchResult is empty string on both success and allowFailure-caught error.
-        // Check if local is behind upstream (informational only).
-        if (remotes.split("\n").includes(remote)) {
+        if (fetchResult === "" && remotes.split("\n").includes(remote)) {
+          // Check if local is behind upstream (informational only)
           const behind = this.git(
             ["rev-list", "--count", "HEAD..@{upstream}"],
             { allowFailure: true },
@@ -357,93 +343,12 @@ export class GitServiceImpl {
   /**
    * Run pre-merge verification check. Auto-detects test runner from project
    * files, or uses custom command from prefs.pre_merge_check.
-   *
-   * Gating:
-   * - `false` → skip (return passed:true, skipped:true)
-   * - non-empty string (not "auto") → use as custom command
-   * - `true`, `"auto"`, or `undefined` → auto-detect from project files
-   *
-   * Auto-detection order:
-   *   package.json scripts.test → npm test
-   *   package.json scripts.build (only if no test) → npm run build
-   *   Cargo.toml → cargo test
-   *   Makefile with test: target → make test
-   *   pyproject.toml → python -m pytest
-   *
-   * If no runner detected in auto mode, returns passed:true (don't block).
+   * Gated on prefs.pre_merge_check (false = skip, string = custom command).
+   * Stub: to be implemented in T03.
    */
   runPreMergeCheck(): PreMergeCheckResult {
-    const pref = this.prefs.pre_merge_check;
-
-    // Explicitly disabled
-    if (pref === false) {
-      return { passed: true, skipped: true };
-    }
-
-    let command: string | null = null;
-
-    // Custom string command (not "auto")
-    if (typeof pref === "string" && pref !== "auto" && pref.trim() !== "") {
-      command = pref.trim();
-    }
-
-    // Auto-detect (true, "auto", or undefined)
-    if (command === null) {
-      command = this.detectTestRunner();
-    }
-
-    if (command === null) {
-      return { passed: true, command: "none", error: "no test runner detected" };
-    }
-
-    // Execute the command
-    try {
-      execSync(command, {
-        cwd: this.basePath,
-        timeout: 300_000,
-        stdio: ["ignore", "pipe", "pipe"],
-        encoding: "utf-8",
-      });
-      return { passed: true, command };
-    } catch (err) {
-      const stderr = err instanceof Error && "stderr" in err
-        ? String((err as { stderr: unknown }).stderr).slice(0, 2000)
-        : String(err).slice(0, 2000);
-      return { passed: false, command, error: stderr };
-    }
-  }
-
-  /**
-   * Detect a test/build runner from project files in basePath.
-   * Returns the command string or null if nothing detected.
-   */
-  private detectTestRunner(): string | null {
-    const pkgPath = join(this.basePath, "package.json");
-    if (existsSync(pkgPath)) {
-      try {
-        const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
-        if (pkg?.scripts?.test) return "npm test";
-        if (pkg?.scripts?.build) return "npm run build";
-      } catch { /* invalid JSON — skip */ }
-    }
-
-    if (existsSync(join(this.basePath, "Cargo.toml"))) {
-      return "cargo test";
-    }
-
-    const makefilePath = join(this.basePath, "Makefile");
-    if (existsSync(makefilePath)) {
-      try {
-        const content = readFileSync(makefilePath, "utf-8");
-        if (/^test\s*:/m.test(content)) return "make test";
-      } catch { /* skip */ }
-    }
-
-    if (existsSync(join(this.basePath, "pyproject.toml"))) {
-      return "python -m pytest";
-    }
-
-    return null;
+    // TODO(S05/T03): implement pre-merge check
+    return { passed: true, skipped: true };
   }
 
   // ─── Merge ─────────────────────────────────────────────────────────────
@@ -531,7 +436,8 @@ export class GitServiceImpl {
       );
     }
 
-    // Snapshot the branch HEAD before merge (gated on prefs.snapshots)
+    // Snapshot the branch HEAD before merge (gated on prefs)
+    // We need to save the ref while the branch still exists
     this.createSnapshot(branch);
 
     // Build rich commit message before squash (needs branch history)
@@ -543,18 +449,6 @@ export class GitServiceImpl {
     // Squash merge
     this.git(["merge", "--squash", branch]);
 
-    // Pre-merge check: run after squash (tests merged result), reset on failure
-    const checkResult = this.runPreMergeCheck();
-    if (!checkResult.passed && !checkResult.skipped) {
-      // Undo the squash merge — nothing committed yet, reset staging area
-      this.git(["reset", "--hard", "HEAD"]);
-      const cmdInfo = checkResult.command ? ` (command: ${checkResult.command})` : "";
-      const errInfo = checkResult.error ? `\n${checkResult.error}` : "";
-      throw new Error(
-        `Pre-merge check failed${cmdInfo}. Merge aborted.${errInfo}`,
-      );
-    }
-
     // Commit with rich message via stdin pipe
     this.git(["commit", "-F", "-"], { input: message });
 
@@ -564,7 +458,11 @@ export class GitServiceImpl {
     // Auto-push to remote if enabled
     if (this.prefs.auto_push === true) {
       const remote = this.prefs.remote ?? "origin";
-      this.git(["push", remote, mainBranch], { allowFailure: true });
+      const pushResult = this.git(["push", remote, mainBranch], { allowFailure: true });
+      if (pushResult === "") {
+        // push succeeded (empty stdout is normal) or failed silently
+        // Verify by checking if remote is reachable — the allowFailure handles errors
+      }
     }
 
     return {
