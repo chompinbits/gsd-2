@@ -44,9 +44,6 @@
     "undici": "^7.19.1",
     "yaml": "^2.8.2"
   },
-  "optionalDependencies": {
-    "@mariozechner/clipboard": "^0.3.2"
-  },
   "devDependencies": {
     "@types/diff": "^7.0.2",
     "@types/hosted-git-info": "^3.0.5",

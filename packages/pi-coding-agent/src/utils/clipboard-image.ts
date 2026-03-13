@@ -1,6 +1,6 @@
 import { spawnSync } from "child_process";
 
-import { clipboard } from "./clipboard-native.js";
+import { readImageFromClipboard as nativeReadImage } from "@gsd/native/clipboard";
 import { loadPhoton } from "./photon.js";
 
 export type ClipboardImage = {
@@ -175,19 +175,20 @@ export async function readClipboardImage(options?: {
 	let image: ClipboardImage | null = null;
 
 	if (platform === "linux" && isWaylandSession(env)) {
+		// Wayland: use CLI tools (wl-paste/xclip) since native arboard
+		// may not have access to the Wayland compositor from a terminal.
 		image = readClipboardImageViaWlPaste() ?? readClipboardImageViaXclip();
 	} else {
-		if (!clipboard || !clipboard.hasImage()) {
+		// macOS, Windows, Linux X11: use native Rust clipboard (arboard)
+		try {
+			const nativeImage = await nativeReadImage();
+			if (!nativeImage || nativeImage.data.length === 0) {
+				return null;
+			}
+			image = { bytes: nativeImage.data, mimeType: nativeImage.mimeType };
+		} catch {
 			return null;
 		}
-
-		const imageData = await clipboard.getImageBinary();
-		if (!imageData || imageData.length === 0) {
-			return null;
-		}
-
-		const bytes = imageData instanceof Uint8Array ? imageData : Uint8Array.from(imageData);
-		image = { bytes, mimeType: "image/png" };
 	}
 
 	if (!image) {
