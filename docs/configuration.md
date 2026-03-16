@@ -434,6 +434,7 @@ git:
 
 # Skills
 skill_discovery: suggest
+skill_staleness_days: 60     # Skills unused for N days get deprioritized (0 = disabled)
 always_use_skills:
   - debug-like-expert
 skill_rules:

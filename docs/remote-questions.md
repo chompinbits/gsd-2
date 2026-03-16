@@ -1,6 +1,6 @@
 # Remote Questions
 
-Remote questions allow GSD to ask for user input via Slack or Discord when running in headless auto-mode. When GSD encounters a decision point that needs human input, it posts the question to your configured channel and polls for a response.
+Remote questions allow GSD to ask for user input via Slack, Discord, or Telegram when running in headless auto-mode. When GSD encounters a decision point that needs human input, it posts the question to your configured channel and polls for a response.
 
 ## Setup
 
@@ -45,13 +45,31 @@ The setup wizard:
 - Bot must be invited to the target channel
 - Typical scopes for public/private channels: `chat:write`, `reactions:read`, `reactions:write`, `channels:read`, `groups:read`, `channels:history`, `groups:history`
 
+### Telegram
+
+```
+/gsd remote telegram
+```
+
+The setup wizard:
+1. Prompts for your Telegram bot token (from [@BotFather](https://t.me/BotFather))
+2. Validates the token against the Telegram API
+3. Prompts for the chat ID (group or private chat)
+4. Sends a test message to confirm permissions
+5. Saves the configuration
+
+**Bot requirements:**
+- A Telegram bot token from [@BotFather](https://t.me/BotFather)
+- Bot must be added to the target group chat (or use private chat with the bot)
+- The `TELEGRAM_BOT_TOKEN` environment variable must be set
+
 ## Configuration
 
 Remote questions are configured in `~/.gsd/preferences.md`:
 
 ```yaml
 remote_questions:
-  channel: discord          # or slack
+  channel: discord          # or slack or telegram
   channel_id: "1234567890123456789"
   timeout_minutes: 5        # 1-30, default 5
   poll_interval_seconds: 5  # 2-30, default 5

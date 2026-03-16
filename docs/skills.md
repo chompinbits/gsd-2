@@ -82,3 +82,45 @@ Place skills in your project for project-specific guidance:
 .pi/agent/skills/my-project-skill/
   SKILL.md
 ```
+
+## Skill Lifecycle Management
+
+GSD tracks skill performance across auto-mode sessions and surfaces health data to help you maintain skill quality.
+
+### Skill Telemetry
+
+Every auto-mode unit records which skills were available and actively loaded. This data is stored in `metrics.json` alongside existing token and cost tracking.
+
+### Skill Health Dashboard
+
+View skill performance with `/gsd skill-health`:
+
+```
+/gsd skill-health              # overview table: name, uses, success%, tokens, trend, last used
+/gsd skill-health rust-core    # detailed view for one skill
+/gsd skill-health --stale 30   # skills unused for 30+ days
+/gsd skill-health --declining  # skills with falling success rates
+```
+
+The dashboard flags skills that may need attention:
+- **Success rate below 70%** over the last 10 uses
+- **Token usage rising 20%+** compared to the previous window
+- **Stale skills** unused beyond the configured threshold
+
+### Staleness Detection
+
+Skills unused for a configurable number of days are flagged as stale and can be automatically deprioritized:
+
+```yaml
+---
+skill_staleness_days: 60   # default: 60, set to 0 to disable
+---
+```
+
+Stale skills are excluded from automatic matching but remain invokable explicitly via `read`.
+
+### Heal-Skill (Post-Unit Analysis)
+
+When configured as a post-unit hook, GSD can analyze whether the agent deviated from a skill's instructions during execution. If significant drift is detected (outdated API patterns, incorrect guidance), it writes proposed fixes to `.gsd/skill-review-queue.md` for human review.
+
+Key design principle: skills are **never auto-modified**. Research shows curated skills outperform auto-generated ones significantly, so the human review step is critical.
