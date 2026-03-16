@@ -23,8 +23,15 @@ const { assertEq, assertTrue, report } = createTestContext();
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
+function run(cmd: string, cwd: string): void {
+  execSync(cmd, { cwd, stdio: "ignore" });
+}
+
 function initRepo(dir: string): void {
-  execSync("git init && git commit --allow-empty -m init", { cwd: dir, stdio: "ignore" });
+  run("git init", dir);
+  run("git config user.email test@test.com", dir);
+  run("git config user.name Test", dir);
+  run("git commit --allow-empty -m init", dir);
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────
@@ -94,7 +101,7 @@ describe("worktree-bugfix", () => {
     mkdirSync(wtPath, { recursive: true });
     mkdirSync(join(wtPath, ".gsd", "milestones", "M005"), { recursive: true });
     // Initialize git in the worktree so getService doesn't fail
-    execSync("git init && git commit --allow-empty -m init", { cwd: wtPath, stdio: "ignore" });
+    initRepo(wtPath);
 
     // captureIntegrationBranch should be a no-op — no META.json written
     const metaPath = join(wtPath, ".gsd", "milestones", "M005", "M005-META.json");
