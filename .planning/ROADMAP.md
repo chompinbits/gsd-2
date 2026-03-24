@@ -34,7 +34,7 @@ Plans:
 - [x] 01-01-PLAN.md — Interface contracts, tool bridge, and event translator
 - [x] 01-02-PLAN.md — CopilotClient manager and CopilotSessionBackend
 - [x] 01-03-PLAN.md — Pi backend stub, createAgentSession wiring, parity tests
-- [ ] 01-04-PLAN.md — Gap closure: wire copilot session routing (close SC-1/2/3 gaps)
+- [x] 01-04-PLAN.md — Gap closure: wire copilot session routing (close SC-1/2/3 gaps)
 
 ### Phase 2: Request Accounting + Model Routing
 **Goal**: Users are protected from premium-request quota exhaustion through multiplier-aware routing and budget guardrails
