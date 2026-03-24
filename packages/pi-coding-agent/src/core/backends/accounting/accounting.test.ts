@@ -5,7 +5,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { MULTIPLIER_VALUES } from "./types.js";
+import { MULTIPLIER_VALUES, DEFAULT_ACCOUNTING_CONFIG } from "./types.js";
 import {
   getModelMultiplier,
   getMultiplierValue,
@@ -16,6 +16,7 @@ import {
 } from "./stage-router.js";
 import { RequestTracker } from "./request-tracker.js";
 import { BudgetGuard, BudgetExceededError } from "./budget-guard.js";
+import { loadAccountingConfig, mergeWithCliOverrides, resetConfig } from "./config.js";
 
 // ─── 1. multipliers.ts ────────────────────────────────────────────────────────
 
@@ -294,5 +295,131 @@ describe("BudgetExceededError", () => {
     assert.equal(err.used, 8);
     assert.equal(err.limit, 10);
     assert.equal(err.percentUsed, 80);
+  });
+});
+
+// ─── 5. config.ts ─────────────────────────────────────────────────────────────
+
+describe("loadAccountingConfig", () => {
+  it("returns DEFAULT_ACCOUNTING_CONFIG when no path provided", () => {
+    const config = loadAccountingConfig();
+    assert.deepEqual(config, DEFAULT_ACCOUNTING_CONFIG);
+  });
+
+  it("returns defaults when config file does not exist", () => {
+    const config = loadAccountingConfig("/nonexistent/path/config.json");
+    assert.deepEqual(config, DEFAULT_ACCOUNTING_CONFIG);
+  });
+
+  it("returns defaults when file has no premium_request section", async () => {
+    const { writeFileSync, unlinkSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const tmpFile = join(tmpdir(), `gsd-test-${Date.now()}.json`);
+    writeFileSync(tmpFile, JSON.stringify({ other_section: { foo: 1 } }));
+    try {
+      const config = loadAccountingConfig(tmpFile);
+      assert.deepEqual(config, DEFAULT_ACCOUNTING_CONFIG);
+    } finally {
+      unlinkSync(tmpFile);
+    }
+  });
+
+  it("merges premium_request section over defaults", async () => {
+    const { writeFileSync, unlinkSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const tmpFile = join(tmpdir(), `gsd-test-${Date.now()}.json`);
+    writeFileSync(
+      tmpFile,
+      JSON.stringify({
+        premium_request: {
+          budget_limit: 500,
+          warn_threshold: 0.7,
+          hard_stop: false,
+        },
+      }),
+    );
+    try {
+      const config = loadAccountingConfig(tmpFile);
+      assert.equal(config.budgetLimit, 500);
+      assert.equal(config.warnThreshold, 0.7);
+      assert.equal(config.hardStop, false);
+    } finally {
+      unlinkSync(tmpFile);
+    }
+  });
+
+  it("falls back to defaults for invalid field values", async () => {
+    const { writeFileSync, unlinkSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const tmpFile = join(tmpdir(), `gsd-test-${Date.now()}.json`);
+    writeFileSync(
+      tmpFile,
+      JSON.stringify({
+        premium_request: {
+          budget_limit: -1,       // invalid: negative
+          warn_threshold: 1.5,    // invalid: > 1
+          hard_stop: "yes",       // invalid: not boolean
+        },
+      }),
+    );
+    try {
+      const config = loadAccountingConfig(tmpFile);
+      assert.equal(config.budgetLimit, DEFAULT_ACCOUNTING_CONFIG.budgetLimit);
+      assert.equal(config.warnThreshold, DEFAULT_ACCOUNTING_CONFIG.warnThreshold);
+      assert.equal(config.hardStop, DEFAULT_ACCOUNTING_CONFIG.hardStop);
+    } finally {
+      unlinkSync(tmpFile);
+    }
+  });
+});
+
+describe("mergeWithCliOverrides", () => {
+  it("applies defined overrides over config", () => {
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const result = mergeWithCliOverrides(base, { budgetLimit: 500 });
+    assert.equal(result.budgetLimit, 500);
+    assert.equal(result.warnThreshold, 0.8); // unchanged
+    assert.equal(result.hardStop, true);     // unchanged
+  });
+
+  it("ignores undefined override values (does not clobber config)", () => {
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const result = mergeWithCliOverrides(base, { budgetLimit: undefined });
+    assert.equal(result.budgetLimit, 300); // not overridden
+  });
+
+  it("returns a new object (immutable merge)", () => {
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const result = mergeWithCliOverrides(base, { budgetLimit: 100 });
+    assert.notEqual(result, base);
+    assert.equal(base.budgetLimit, 300); // original unchanged
+  });
+
+  it("applies all three overrides together", () => {
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const result = mergeWithCliOverrides(base, {
+      budgetLimit: 100,
+      warnThreshold: 0.5,
+      hardStop: false,
+    });
+    assert.equal(result.budgetLimit, 100);
+    assert.equal(result.warnThreshold, 0.5);
+    assert.equal(result.hardStop, false);
+  });
+});
+
+describe("resetConfig", () => {
+  it("returns DEFAULT_ACCOUNTING_CONFIG values", () => {
+    const config = resetConfig();
+    assert.deepEqual(config, DEFAULT_ACCOUNTING_CONFIG);
+  });
+
+  it("returns a new object each call (not the same reference)", () => {
+    const a = resetConfig();
+    const b = resetConfig();
+    assert.notEqual(a, b);
   });
 });
