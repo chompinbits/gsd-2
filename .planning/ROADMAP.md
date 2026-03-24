@@ -50,7 +50,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Multiplier table, stage router, and accounting type contracts
 - [x] 02-02-PLAN.md — Request tracker, budget guard, configuration, and unit tests
-- [ ] 02-03-PLAN.md — Adapter wiring, telemetry formatting, and CLI visibility
+- [x] 02-03-PLAN.md — Adapter wiring, telemetry formatting, and CLI visibility
 
 ### Phase 3: Planning Workflow Migration
 **Goal**: Users can run discuss and plan workflows through the Copilot SDK with behavior identical to the current experience
