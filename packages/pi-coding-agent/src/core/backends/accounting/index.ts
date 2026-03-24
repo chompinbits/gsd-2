@@ -19,3 +19,15 @@ export {
   getStageMultiplierTier,
   resolveEffectiveTier,
 } from "./stage-router.js";
+
+export { RequestTracker } from "./request-tracker.js";
+
+export type { BudgetWarning } from "./budget-guard.js";
+export { BudgetGuard, BudgetExceededError } from "./budget-guard.js";
+
+export {
+  loadAccountingConfig,
+  mergeWithCliOverrides,
+  resetConfig,
+} from "./config.js";
+
