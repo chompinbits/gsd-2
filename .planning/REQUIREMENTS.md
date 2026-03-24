@@ -10,7 +10,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Runtime Foundation
 
 - [x] **RUNT-01**: User can run GSD workflows through a Copilot SDK backend selected via configuration or feature flag.
-- [ ] **RUNT-02**: User can keep using the existing runtime path in parallel with Copilot SDK during migration.
+- [x] **RUNT-02**: User can keep using the existing runtime path in parallel with Copilot SDK during migration.
 - [x] **RUNT-03**: User can create, resume, and destroy Copilot SDK sessions reliably for workflow units.
 
 ### Tools and Events
@@ -69,7 +69,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | RUNT-01 | Phase 1 | Complete |
-| RUNT-02 | Phase 1 | Pending |
+| RUNT-02 | Phase 1 | Complete |
 | RUNT-03 | Phase 1 | Complete |
 | TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 3 | Pending |

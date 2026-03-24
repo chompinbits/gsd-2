@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Interface contracts, tool bridge, and event translator
 - [x] 01-02-PLAN.md — CopilotClient manager and CopilotSessionBackend
-- [ ] 01-03-PLAN.md — Pi backend stub, createAgentSession wiring, parity tests
+- [x] 01-03-PLAN.md — Pi backend stub, createAgentSession wiring, parity tests
 
 ### Phase 2: Request Accounting + Model Routing
 **Goal**: Users are protected from premium-request quota exhaustion through multiplier-aware routing and budget guardrails
