@@ -15,7 +15,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Tools and Events
 
-- [ ] **TOOL-01**: User can run existing extension and skill tools through Copilot SDK without rewriting tool business logic.
+- [x] **TOOL-01**: User can run existing extension and skill tools through Copilot SDK without rewriting tool business logic.
 - [ ] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
 - [ ] **TOOL-03**: User sees command outcomes equivalent to current behavior for key planning commands.
 
@@ -32,7 +32,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Operational Safety
 
-- [ ] **SAFE-01**: User benefits from SDK version pinning and adapter isolation that contain preview-breakage risk.
+- [x] **SAFE-01**: User benefits from SDK version pinning and adapter isolation that contain preview-breakage risk.
 - [ ] **SAFE-02**: User has parity tests for critical planning commands before backend defaults are changed.
 - [ ] **SAFE-03**: User can recover planning sessions across process interruptions with validated resume behavior.
 
@@ -71,7 +71,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RUNT-01 | Phase 1 | Pending |
 | RUNT-02 | Phase 1 | Pending |
 | RUNT-03 | Phase 1 | Pending |
-| TOOL-01 | Phase 1 | Pending |
+| TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 3 | Pending |
 | TOOL-03 | Phase 4 | Pending |
 | COST-01 | Phase 2 | Pending |
@@ -79,7 +79,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COST-03 | Phase 2 | Pending |
 | PLAN-01 | Phase 3 | Pending |
 | PLAN-02 | Phase 3 | Pending |
-| SAFE-01 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 4 | Pending |
 | SAFE-03 | Phase 4 | Pending |
 
