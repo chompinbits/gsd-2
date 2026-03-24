@@ -125,15 +125,6 @@ Remaining: SC-3 resume behavior requires human/live SDK validation
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| `packages/pi-coding-agent/src/core/sdk.ts` | 208-211 | `void copilotBackend` — backend discarded after initialization | 🛑 Blocker | Users selecting `backend: "copilot"` get Pi runtime behavior, not Copilot SDK; phase goal unfulfilled |
-| `packages/pi-coding-agent/src/core/backends/pi-backend.ts` | 11-18 | `createSession`/`resumeSession` throw errors rather than delegating | ⚠ Warning | `PiSessionBackend` is not a real `SessionBackend` implementation; satisfies interface shape only |
-
----
-
-### Anti-Patterns Found
-
-| File | Line | Pattern | Severity | Impact |
-|------|------|---------|----------|--------|
 | `packages/pi-coding-agent/src/core/sdk.ts` | 214 | `console.error("[gsd] Copilot SDK session created:...")` — debug log in production path | ⚠ Warning | Will emit to stderr on every copilot session creation; noisy in production but not a blocker |
 | `packages/pi-coding-agent/src/core/backends/pi-backend.ts` | 11-18 | `createSession`/`resumeSession` throw errors rather than delegating | ⚠ Warning | By design — `PiSessionBackend` is an interface-shape stub; Pi uses legacy `Agent`/`AgentSession` directly |
 
