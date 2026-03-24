@@ -5,10 +5,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
+import { MULTIPLIER_VALUES } from "./types.js";
 import {
   getModelMultiplier,
   getMultiplierValue,
-  MULTIPLIER_VALUES,
 } from "./multipliers.js";
 import {
   getStageMultiplierTier,
