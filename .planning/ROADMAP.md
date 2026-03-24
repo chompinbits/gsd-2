@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3 plans
 Plans:
 - [x] 01-01-PLAN.md — Interface contracts, tool bridge, and event translator
-- [ ] 01-02-PLAN.md — CopilotClient manager and CopilotSessionBackend
+- [x] 01-02-PLAN.md — CopilotClient manager and CopilotSessionBackend
 - [ ] 01-03-PLAN.md — Pi backend stub, createAgentSession wiring, parity tests
 
 ### Phase 2: Request Accounting + Model Routing
