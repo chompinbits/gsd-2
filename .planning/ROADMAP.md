@@ -29,7 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can resume a previously created Copilot SDK session by ID
   4. User can run an existing GSD tool (e.g., file read/write) through the Copilot SDK session without modifying tool code
   5. User sees SDK dependency pinned to an exact version with all SDK calls isolated within the adapter module
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 01-01-PLAN.md — Interface contracts, tool bridge, and event translator
+- [ ] 01-02-PLAN.md — CopilotClient manager and CopilotSessionBackend
+- [ ] 01-03-PLAN.md — Pi backend stub, createAgentSession wiring, parity tests
 
 ### Phase 2: Request Accounting + Model Routing
 **Goal**: Users are protected from premium-request quota exhaustion through multiplier-aware routing and budget guardrails
@@ -71,7 +75,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Adapter Layer + SDK Foundation | 0/0 | Not started | - |
+| 1. Adapter Layer + SDK Foundation | 0/3 | Planned | - |
 | 2. Request Accounting + Model Routing | 0/0 | Not started | - |
 | 3. Planning Workflow Migration | 0/0 | Not started | - |
 | 4. Parity Validation + Safe Switchover | 0/0 | Not started | - |
