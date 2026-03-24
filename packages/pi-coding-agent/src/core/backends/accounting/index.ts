@@ -31,3 +31,10 @@ export {
   resetConfig,
 } from "./config.js";
 
+export {
+  formatStageLine,
+  formatPremiumSummary,
+  persistSessionAccounting,
+  loadPersistedAccounting,
+} from "./telemetry.js";
+
