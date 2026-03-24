@@ -273,9 +273,12 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 		// Lazy imports keep the default Pi runtime path free of Copilot SDK loading cost.
 		const { CopilotClientManager } = await import("./backends/copilot-client-manager.js");
 		const { CopilotSessionBackend } = await import("./backends/copilot-backend.js");
+		const { loadAccountingConfig } = await import("./backends/accounting/index.js");
 
 		const clientManager = retainSharedCopilotClientManager(() => new CopilotClientManager());
 		const copilotBackend = new CopilotSessionBackend(clientManager);
+		const accountingConfig = loadAccountingConfig(join(agentDir, "config.json"));
+		copilotBackend.setAccountingConfig(accountingConfig);
 		try {
 			await copilotBackend.initialize();
 			const sessionConfig = {
