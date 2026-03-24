@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import type { AgentTool } from "@gsd/pi-agent-core";
 import { Type } from "@sinclair/typebox";
+import { CopilotSessionBackend } from "./copilot-backend.js";
 import { PiSessionBackend } from "./pi-backend.js";
 import { bridgeToolToCopilot } from "./tool-bridge.js";
 import { isSessionIdle, translateCopilotEvent } from "./event-translator.js";
@@ -96,5 +97,63 @@ describe("tool bridge", () => {
 
 		const bridged = bridgeToolToCopilot(mockTool, {});
 		assert.ok(bridged);
+	});
+});
+
+describe("copilot session routing", () => {
+	it("sdk.ts copilot branch calls copilotBackend.createSession", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("copilotBackend.createSession("),
+			"sdk.ts must call copilotBackend.createSession — not discard with void",
+		);
+	});
+
+	it("sdk.ts copilot branch does not discard backend", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(!sdkSource.includes("void copilotBackend"), "sdk.ts must not discard copilotBackend with void");
+	});
+
+	it("CreateAgentSessionResult exposes copilotSessionHandle field", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("copilotSessionHandle"),
+			"CreateAgentSessionResult must expose copilotSessionHandle",
+		);
+	});
+
+	it("CopilotSessionBackend.createSession returns BackendSessionHandle-shaped object", async () => {
+		const mockSession = {
+			sessionId: "test-session-123",
+			sendAndWait: async () => ({ data: { content: "response" } }),
+			on: () => () => {},
+			destroy: async () => {},
+			abort: async () => {},
+		};
+
+		const mockClient = {
+			createSession: async () => mockSession,
+			resumeSession: async () => mockSession,
+		};
+
+		const mockManager = {
+			start: async () => {},
+			getClient: () => mockClient,
+			stop: async () => {},
+			isStarted: () => true,
+		};
+
+		const backend = new CopilotSessionBackend(mockManager as any);
+		const handle = await backend.createSession({
+			tools: [],
+			cwd: "/tmp",
+			streaming: true,
+		});
+
+		assert.equal(handle.sessionId, "test-session-123");
+		assert.equal(typeof handle.send, "function");
+		assert.equal(typeof handle.subscribe, "function");
+		assert.equal(typeof handle.destroy, "function");
+		assert.equal(typeof handle.abort, "function");
 	});
 });
