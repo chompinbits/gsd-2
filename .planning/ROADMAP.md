@@ -45,7 +45,12 @@ Plans:
   2. User can view accumulated premium-request usage per workflow stage and per run
   3. User is warned or stopped when premium-request budget approaches or exceeds a configured threshold
   4. User benefits from automatic routing of low-complexity stages (discuss, verify) to 0× models
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Multiplier table, stage router, and accounting type contracts
+- [ ] 02-02-PLAN.md — Request tracker, budget guard, configuration, and unit tests
+- [ ] 02-03-PLAN.md — Adapter wiring, telemetry formatting, and CLI visibility
 
 ### Phase 3: Planning Workflow Migration
 **Goal**: Users can run discuss and plan workflows through the Copilot SDK with behavior identical to the current experience
