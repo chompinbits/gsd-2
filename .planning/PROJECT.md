@@ -16,6 +16,7 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 - ✓ Extension and skill-driven command system supports rich workflow automation — existing
 - ✓ Planning and state artifacts drive autonomous execution and progress tracking — existing
 - ✓ Tooling already supports cost and token visibility across workflows — existing
+- ✓ Phase 01 validated Copilot adapter foundations: create, resume, destroy, and tool bridging now work on the Copilot backend while preserving the Pi default path
 
 ### Active
 
@@ -51,6 +52,12 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 | Optimize both request count and request yield | Pricing pressure and quota efficiency both matter | — Pending |
 | Prioritize phase planning workflows for first optimization wave | High leverage area with repeated orchestration overhead | — Pending |
 | Enforce behavioral parity before aggressive redesign | Reduces user-facing risk during runtime migration | — Pending |
+| Additive Copilot session handle plus explicit resume routing before full session swap | Delivers validated backend parity without breaking the existing AgentSession path | Phase 01 complete |
+
+## Current State
+
+- Phase 01 complete: adapter layer, tool bridge, event translation, create-session routing, and explicit Copilot session resume path are verified.
+- Next focus: Phase 02 request accounting and model routing.
 
 ## Evolution
 
@@ -70,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-24 after initialization*
+*Last updated: 2026-03-24 after Phase 01 completion*

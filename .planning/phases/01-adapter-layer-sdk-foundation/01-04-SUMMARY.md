@@ -77,7 +77,7 @@ None - plan executed exactly as written.
 
 ## Issues Encountered
 
-- Could not run package build/test end-to-end in this environment because `tsc` is not available in PATH (`npm run build --workspace @gsd/pi-coding-agent` exits with code 127).
+- Initial local build validation was blocked by missing workspace dependencies and follow-up Copilot adapter typing issues; resolved during human-verification follow-up, and `npm run build --workspace @gsd/pi-coding-agent` now passes.
 
 ## User Setup Required
 
