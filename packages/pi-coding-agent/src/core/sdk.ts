@@ -75,6 +75,9 @@ export interface CreateAgentSessionOptions {
 
 	/** Settings manager. Default: SettingsManager.create(cwd, agentDir) */
 	settingsManager?: SettingsManager;
+
+	/** Backend runtime to use. Default: "pi" (existing). "copilot" enables GitHub Copilot SDK. */
+	backend?: "pi" | "copilot";
 }
 
 /** Result from createAgentSession */
@@ -188,6 +191,24 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 
 	const settingsManager = options.settingsManager ?? SettingsManager.create(cwd, agentDir);
 	const sessionManager = options.sessionManager ?? SessionManager.create(cwd);
+	const backend = options.backend ?? "pi";
+
+	if (backend === "copilot") {
+		// Lazy imports keep the default Pi runtime path free of Copilot SDK loading cost.
+		const { CopilotClientManager } = await import("./backends/copilot-client-manager.js");
+		const { CopilotSessionBackend } = await import("./backends/copilot-backend.js");
+		const { bridgeAllTools } = await import("./backends/tool-bridge.js");
+
+		const clientManager = new CopilotClientManager();
+		const copilotBackend = new CopilotSessionBackend(clientManager);
+		await copilotBackend.initialize();
+		console.error("[gsd] Copilot SDK backend initialized (experimental)");
+
+		// Phase 1 hybrid mode: backend is initialized for validation only.
+		// Full session routing to this backend is added in a later phase.
+		void bridgeAllTools;
+		void copilotBackend;
+	}
 
 	if (!resourceLoader) {
 		resourceLoader = new DefaultResourceLoader({ cwd, agentDir, settingsManager });
