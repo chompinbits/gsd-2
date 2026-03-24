@@ -21,7 +21,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Premium Request Efficiency
 
-- [ ] **COST-01**: User benefits from multiplier-aware model routing by workflow stage (0x, 0.33x, 1x tiers).
+- [x] **COST-01**: User benefits from multiplier-aware model routing by workflow stage (0x, 0.33x, 1x tiers).
 - [ ] **COST-02**: User can view premium-request usage metrics per workflow stage and per run.
 - [ ] **COST-03**: User is protected by retry budget guardrails that stop or downgrade model usage when request budget is at risk.
 
@@ -74,7 +74,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 3 | Pending |
 | TOOL-03 | Phase 4 | Pending |
-| COST-01 | Phase 2 | Pending |
+| COST-01 | Phase 2 | Complete |
 | COST-02 | Phase 2 | Pending |
 | COST-03 | Phase 2 | Pending |
 | PLAN-01 | Phase 3 | Pending |
