@@ -4,6 +4,7 @@ import type { Message, Model } from "@gsd/pi-ai";
 import { getAgentDir, getDocsPath } from "../config.js";
 import { AgentSession } from "./agent-session.js";
 import { AuthStorage } from "./auth-storage.js";
+import type { BackendSessionHandle } from "./backends/backend-interface.js";
 import { DEFAULT_THINKING_LEVEL } from "./defaults.js";
 import type { ExtensionRunner, LoadExtensionsResult, ToolDefinition } from "./extensions/index.js";
 import { convertToLlm } from "./messages.js";
@@ -88,6 +89,8 @@ export interface CreateAgentSessionResult {
 	extensionsResult: LoadExtensionsResult;
 	/** Warning if session was restored with a different model than saved */
 	modelFallbackMessage?: string;
+	/** When backend is copilot, contains the live Copilot SDK session handle. */
+	copilotSessionHandle?: BackendSessionHandle;
 }
 
 // Re-exports
@@ -192,22 +195,23 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 	const settingsManager = options.settingsManager ?? SettingsManager.create(cwd, agentDir);
 	const sessionManager = options.sessionManager ?? SessionManager.create(cwd);
 	const backend = options.backend ?? "pi";
+	let copilotSessionHandle: BackendSessionHandle | undefined;
 
 	if (backend === "copilot") {
 		// Lazy imports keep the default Pi runtime path free of Copilot SDK loading cost.
 		const { CopilotClientManager } = await import("./backends/copilot-client-manager.js");
 		const { CopilotSessionBackend } = await import("./backends/copilot-backend.js");
-		const { bridgeAllTools } = await import("./backends/tool-bridge.js");
 
 		const clientManager = new CopilotClientManager();
 		const copilotBackend = new CopilotSessionBackend(clientManager);
 		await copilotBackend.initialize();
-		console.error("[gsd] Copilot SDK backend initialized (experimental)");
-
-		// Phase 1 hybrid mode: backend is initialized for validation only.
-		// Full session routing to this backend is added in a later phase.
-		void bridgeAllTools;
-		void copilotBackend;
+		copilotSessionHandle = await copilotBackend.createSession({
+			tools: options.tools ?? codingTools,
+			cwd,
+			sessionId: sessionManager.getSessionId(),
+			streaming: true,
+		});
+		console.error("[gsd] Copilot SDK session created:", copilotSessionHandle.sessionId);
 	}
 
 	if (!resourceLoader) {
@@ -445,5 +449,6 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 		session,
 		extensionsResult,
 		modelFallbackMessage,
+		...(copilotSessionHandle ? { copilotSessionHandle } : {}),
 	};
 }
