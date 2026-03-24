@@ -20,6 +20,7 @@
     "copy-assets": "node scripts/copy-assets.cjs"
   },
   "dependencies": {
+    "@github/copilot-sdk": "0.2.0",
     "@mariozechner/jiti": "^2.6.2",
     "@silvia-odwyer/photon-node": "^0.3.4",
     "chalk": "^5.5.0",
