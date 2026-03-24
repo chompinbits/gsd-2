@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import type { AgentTool, AgentToolResult } from "@gsd/pi-agent-core";
 import { defineTool } from "@github/copilot-sdk";
 
+const BUILT_IN_TOOL_NAMES = new Set(["bash", "read", "edit", "write", "grep", "find", "ls"]);
+
 export interface ToolBridgeContext {
 	signal?: AbortSignal;
 }
@@ -17,6 +19,7 @@ export function bridgeToolToCopilot(tool: AgentTool, context: ToolBridgeContext)
 	return defineTool(tool.name, {
 		description: tool.description,
 		parameters: tool.parameters,
+		overridesBuiltInTool: BUILT_IN_TOOL_NAMES.has(tool.name),
 		handler: async (args: unknown) => {
 			const toolCallId = randomUUID();
 			const result = await tool.execute(toolCallId, args as never, context.signal);

@@ -84,7 +84,7 @@ describe("dependency pinning", () => {
 describe("tool bridge", () => {
 	it("returns a defined tool from AgentTool input", () => {
 		const parameters = Type.Object({}, { additionalProperties: false });
-		const mockTool: AgentTool<typeof parameters> = {
+		const mockTool: AgentTool<any> = {
 			name: "test_tool",
 			label: "Test Tool",
 			description: "A test tool",

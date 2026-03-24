@@ -4,6 +4,7 @@ import type { Message, Model } from "@gsd/pi-ai";
 import { getAgentDir, getDocsPath } from "../config.js";
 import { AgentSession } from "./agent-session.js";
 import { AuthStorage } from "./auth-storage.js";
+import type { CopilotClientManager } from "./backends/copilot-client-manager.js";
 import type { BackendSessionHandle } from "./backends/backend-interface.js";
 import { DEFAULT_THINKING_LEVEL } from "./defaults.js";
 import type { ExtensionRunner, LoadExtensionsResult, ToolDefinition } from "./extensions/index.js";
@@ -140,6 +141,75 @@ export {
 	createHashlineReadTool,
 };
 
+let sharedCopilotClientManager: CopilotClientManager | undefined;
+let sharedCopilotSessionCount = 0;
+let sharedCopilotStopPromise: Promise<void> | undefined;
+
+function retainSharedCopilotClientManager(factory: () => CopilotClientManager): CopilotClientManager {
+	const clientManager = sharedCopilotClientManager ??= factory();
+	sharedCopilotSessionCount += 1;
+	return clientManager;
+}
+
+async function releaseSharedCopilotClientManager(clientManager: CopilotClientManager): Promise<void> {
+	if (sharedCopilotClientManager !== clientManager) {
+		return;
+	}
+
+	sharedCopilotSessionCount = Math.max(0, sharedCopilotSessionCount - 1);
+	if (sharedCopilotSessionCount > 0) {
+		return;
+	}
+
+	if (!sharedCopilotStopPromise) {
+		sharedCopilotStopPromise = clientManager.stop().finally(() => {
+			if (sharedCopilotClientManager === clientManager && sharedCopilotSessionCount === 0) {
+				sharedCopilotClientManager = undefined;
+			}
+			sharedCopilotStopPromise = undefined;
+		});
+	}
+
+	await sharedCopilotStopPromise;
+}
+
+function withCopilotSessionCleanup(
+	handle: BackendSessionHandle,
+	release: () => Promise<void>,
+): BackendSessionHandle {
+	let released = false;
+
+	const releaseOnce = async () => {
+		if (released) {
+			return;
+		}
+		released = true;
+		await release();
+	};
+
+	return {
+		get sessionId() {
+			return handle.sessionId;
+		},
+		send(prompt: string, attachments?: unknown[]) {
+			return handle.send(prompt, attachments);
+		},
+		subscribe(listener) {
+			return handle.subscribe(listener);
+		},
+		async destroy() {
+			try {
+				await handle.destroy();
+			} finally {
+				await releaseOnce();
+			}
+		},
+		abort() {
+			return handle.abort();
+		},
+	};
+}
+
 // Helper Functions
 
 function getDefaultAgentDir(): string {
@@ -194,6 +264,8 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 
 	const settingsManager = options.settingsManager ?? SettingsManager.create(cwd, agentDir);
 	const sessionManager = options.sessionManager ?? SessionManager.create(cwd);
+	const existingSession = sessionManager.buildSessionContext();
+	const hasExistingSession = existingSession.messages.length > 0 || sessionManager.getBranch().length > 0;
 	const backend = options.backend ?? "pi";
 	let copilotSessionHandle: BackendSessionHandle | undefined;
 
@@ -202,15 +274,27 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 		const { CopilotClientManager } = await import("./backends/copilot-client-manager.js");
 		const { CopilotSessionBackend } = await import("./backends/copilot-backend.js");
 
-		const clientManager = new CopilotClientManager();
+		const clientManager = retainSharedCopilotClientManager(() => new CopilotClientManager());
 		const copilotBackend = new CopilotSessionBackend(clientManager);
-		await copilotBackend.initialize();
-		copilotSessionHandle = await copilotBackend.createSession({
-			tools: options.tools ?? codingTools,
-			cwd,
-			sessionId: sessionManager.getSessionId(),
-			streaming: true,
-		});
+		try {
+			await copilotBackend.initialize();
+			const sessionConfig = {
+				tools: options.tools ?? codingTools,
+				cwd,
+				configDir: agentDir,
+				sessionId: sessionManager.getSessionId(),
+				streaming: true,
+			};
+			const rawCopilotSessionHandle = hasExistingSession
+				? await copilotBackend.resumeSession(sessionManager.getSessionId(), sessionConfig)
+				: await copilotBackend.createSession(sessionConfig);
+			copilotSessionHandle = withCopilotSessionCleanup(rawCopilotSessionHandle, () =>
+				releaseSharedCopilotClientManager(clientManager),
+			);
+		} catch (error) {
+			await releaseSharedCopilotClientManager(clientManager);
+			throw error;
+		}
 		console.error("[gsd] Copilot SDK session created:", copilotSessionHandle.sessionId);
 	}
 
@@ -220,9 +304,6 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 		time("resourceLoader.reload");
 	}
 
-	// Check if session has existing data to restore
-	const existingSession = sessionManager.buildSessionContext();
-	const hasExistingSession = existingSession.messages.length > 0;
 	const hasThinkingEntry = sessionManager.getBranch().some((entry) => entry.type === "thinking_level_change");
 
 	let model = options.model;

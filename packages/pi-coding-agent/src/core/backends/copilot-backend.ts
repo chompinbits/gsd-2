@@ -52,18 +52,17 @@ export class CopilotSessionBackend implements SessionBackend {
 	async createSession(config: BackendConfig): Promise<BackendSessionHandle> {
 		const client = this.clientManager.getClient();
 		const sdkTools = bridgeAllTools(config.tools, {});
-		const sessionConfig: Record<string, unknown> = {
+		const sessionConfig = {
 			model: config.model,
 			streaming: config.streaming ?? true,
 			tools: sdkTools,
 			onPermissionRequest: approveAll,
 			sessionId: config.sessionId,
-			cwd: config.cwd,
+			workingDirectory: config.cwd,
+			configDir: config.configDir,
+			infiniteSessions: { enabled: true },
+			...(config.systemMessage ? { systemMessage: { content: config.systemMessage } } : {}),
 		};
-
-		if (config.systemMessage) {
-			sessionConfig.systemMessage = { content: config.systemMessage };
-		}
 
 		const session = await client.createSession(sessionConfig);
 		return new CopilotSessionHandle(session);
@@ -75,6 +74,9 @@ export class CopilotSessionBackend implements SessionBackend {
 		const session = await client.resumeSession(sessionId, {
 			tools: sdkTools,
 			onPermissionRequest: approveAll,
+			workingDirectory: config.cwd,
+			configDir: config.configDir,
+			infiniteSessions: { enabled: true },
 		});
 		return new CopilotSessionHandle(session);
 	}

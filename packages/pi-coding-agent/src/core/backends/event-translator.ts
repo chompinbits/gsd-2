@@ -1,4 +1,5 @@
 import type { AgentEvent } from "@gsd/pi-agent-core";
+import type { AssistantMessageEvent } from "@gsd/pi-ai";
 
 export interface CopilotSessionEvent {
 	type: string;
@@ -28,10 +29,16 @@ export function translateCopilotEvent(event: CopilotSessionEvent): AgentEvent | 
 		case "assistant.message_delta": {
 			const deltaContent = String(data.deltaContent ?? "");
 			const message = toAssistantMessage(deltaContent);
+			const assistantMessageEvent: AssistantMessageEvent = {
+				type: "text_delta",
+				contentIndex: 0,
+				delta: deltaContent,
+				partial: message,
+			};
 			return {
 				type: "message_update",
 				message,
-				assistantMessageEvent: { deltaContent },
+				assistantMessageEvent,
 			} as AgentEvent;
 		}
 

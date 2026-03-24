@@ -5,6 +5,7 @@ export interface BackendConfig {
 	tools: AgentTool[];
 	systemMessage?: string;
 	cwd: string;
+	configDir?: string;
 	sessionId?: string;
 	streaming?: boolean;
 }
