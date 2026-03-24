@@ -49,7 +49,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Multiplier table, stage router, and accounting type contracts
-- [ ] 02-02-PLAN.md — Request tracker, budget guard, configuration, and unit tests
+- [x] 02-02-PLAN.md — Request tracker, budget guard, configuration, and unit tests
 - [ ] 02-03-PLAN.md — Adapter wiring, telemetry formatting, and CLI visibility
 
 ### Phase 3: Planning Workflow Migration
@@ -82,6 +82,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Adapter Layer + SDK Foundation | 4/4 | Complete | 2026-03-24 |
-| 2. Request Accounting + Model Routing | 1/3 | In Progress|  |
+| 2. Request Accounting + Model Routing | 2/3 | In Progress|  |
 | 3. Planning Workflow Migration | 0/0 | Not started | - |
 | 4. Parity Validation + Safe Switchover | 0/0 | Not started | - |
