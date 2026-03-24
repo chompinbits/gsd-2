@@ -29,11 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can resume a previously created Copilot SDK session by ID
   4. User can run an existing GSD tool (e.g., file read/write) through the Copilot SDK session without modifying tool code
   5. User sees SDK dependency pinned to an exact version with all SDK calls isolated within the adapter module
-**Plans:** 3 plans
+**Plans:** 4 plans
 Plans:
 - [x] 01-01-PLAN.md — Interface contracts, tool bridge, and event translator
 - [x] 01-02-PLAN.md — CopilotClient manager and CopilotSessionBackend
 - [x] 01-03-PLAN.md — Pi backend stub, createAgentSession wiring, parity tests
+- [ ] 01-04-PLAN.md — Gap closure: wire copilot session routing (close SC-1/2/3 gaps)
 
 ### Phase 2: Request Accounting + Model Routing
 **Goal**: Users are protected from premium-request quota exhaustion through multiplier-aware routing and budget guardrails
