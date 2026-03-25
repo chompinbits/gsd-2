@@ -17,7 +17,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **TOOL-01**: User can run existing extension and skill tools through Copilot SDK without rewriting tool business logic.
 - [x] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
-- [ ] **TOOL-03**: User sees command outcomes equivalent to current behavior for key planning commands.
+- [x] **TOOL-03**: User sees command outcomes equivalent to current behavior for key planning commands.
 
 ### Premium Request Efficiency
 
@@ -33,8 +33,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Operational Safety
 
 - [x] **SAFE-01**: User benefits from SDK version pinning and adapter isolation that contain preview-breakage risk.
-- [ ] **SAFE-02**: User has parity tests for critical planning commands before backend defaults are changed.
-- [ ] **SAFE-03**: User can recover planning sessions across process interruptions with validated resume behavior.
+- [x] **SAFE-02**: User has parity tests for critical planning commands before backend defaults are changed.
+- [x] **SAFE-03**: User can recover planning sessions across process interruptions with validated resume behavior.
 
 ## v2 Requirements
 
@@ -73,15 +73,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RUNT-03 | Phase 1 | Complete |
 | TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 3 | Complete |
-| TOOL-03 | Phase 4 | Pending |
+| TOOL-03 | Phase 4 | Complete |
 | COST-01 | Phase 2 | Complete |
 | COST-02 | Phase 2 | Complete |
 | COST-03 | Phase 2 | Complete |
 | PLAN-01 | Phase 3 | Complete |
 | PLAN-02 | Phase 3 | Complete |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 4 | Pending |
-| SAFE-03 | Phase 4 | Pending |
+| SAFE-02 | Phase 4 | Complete |
+| SAFE-03 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 14 total

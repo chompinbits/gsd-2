@@ -77,10 +77,10 @@ Plans:
   1. User sees automated parity test results confirming planning command outputs match between Pi SDK and Copilot SDK backends
   2. User can recover a planning session after a process interruption and continue from where it stopped
   3. User sees key planning command outcomes (discuss, plan, plan-check) produce functionally equivalent artifacts on both backends
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 04-01-PLAN.md — E2E parity validation tests and session resume/interruption recovery tests
+- [x] 04-01-PLAN.md — E2E parity validation tests and session resume/interruption recovery tests
 - [ ] 04-02-PLAN.md — Config-driven default backend selection and switchover safety tests
 
 ## Progress
@@ -93,4 +93,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Adapter Layer + SDK Foundation | 4/4 | Complete | 2026-03-24 |
 | 2. Request Accounting + Model Routing | 3/3 | Complete    | 2026-03-25 |
 | 3. Planning Workflow Migration | 4/4 | Complete | 2026-03-25 |
-| 4. Parity Validation + Safe Switchover | 0/0 | Not started | - |
+| 4. Parity Validation + Safe Switchover | 1/2 | In Progress|  |
