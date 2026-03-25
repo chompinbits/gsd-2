@@ -62,9 +62,15 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 
 ## Current State
 
-- Phase 01 through Phase 07 are complete for the v1 milestone roadmap.
-- Runtime foundation, planning parity, accounting telemetry propagation, and live operational safety checks have verification artifacts and regression coverage.
-- Current focus: milestone closeout and transition planning for v2 execution/verification workflow migration scope.
+- v1.0 Copilot SDK Migration is shipped and archived.
+- Phase 01 through Phase 07 are complete, including live parity/switchover/resume validation evidence.
+- Runtime foundation, planning parity, accounting telemetry propagation, and live operational safety checks now have milestone-level artifacts in `.planning/milestones/`.
+
+## Next Milestone Goals
+
+- Define v1.1 scope and requirements via `/gsd-new-milestone`.
+- Prioritize deferred v2 requirement themes for next planning cycle: execute/verify migration (`EXEC-01`, `EXEC-02`) and coverage expansion (`FLOW-01` to `FLOW-03`).
+- Re-run a fresh milestone audit at v1.1 closeout to keep milestone status and gap reporting current.
 
 ## Evolution
 
@@ -84,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 after Phase 07 completion*
+*Last updated: 2026-03-25 after v1.0 milestone completion*
