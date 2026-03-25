@@ -28,7 +28,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Planning Workflow Migration
 
 - [x] **PLAN-01**: User can run discuss/plan flows on Copilot SDK with parity to current command UX.
-- [ ] **PLAN-02**: User can run plan-check style validation in the migrated planning path.
+- [x] **PLAN-02**: User can run plan-check style validation in the migrated planning path.
 
 ### Operational Safety
 
@@ -78,7 +78,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COST-02 | Phase 2 | Complete |
 | COST-03 | Phase 2 | Complete |
 | PLAN-01 | Phase 3 | Complete |
-| PLAN-02 | Phase 3 | Pending |
+| PLAN-02 | Phase 3 | Complete |
 | SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 4 | Pending |
 | SAFE-03 | Phase 4 | Pending |

@@ -66,7 +66,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Copilot discuss workflow migration and parity baseline
-- [ ] 03-02-PLAN.md — Copilot plan workflow migration and artifact validation
+- [x] 03-02-PLAN.md — Copilot plan workflow migration and artifact validation
 - [ ] 03-03-PLAN.md — Parity testing + integration validation
 
 ### Phase 4: Parity Validation + Safe Switchover
@@ -88,5 +88,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Adapter Layer + SDK Foundation | 4/4 | Complete | 2026-03-24 |
 | 2. Request Accounting + Model Routing | 3/3 | Complete    | 2026-03-25 |
-| 3. Planning Workflow Migration | 1/4 | In Progress|  |
+| 3. Planning Workflow Migration | 2/4 | In Progress|  |
 | 4. Parity Validation + Safe Switchover | 0/0 | Not started | - |
