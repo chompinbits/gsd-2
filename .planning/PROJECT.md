@@ -19,6 +19,10 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 - ✓ Phase 01 validated Copilot adapter foundations: create, resume, destroy, and tool bridging now work on the Copilot backend while preserving the Pi default path
 - ✓ Phase 02 validated request accounting and model routing: multiplier tiers, per-stage usage tracking, budget guardrails, and telemetry/session persistence on the Copilot path
 - ✓ Phase 03 validated planning workflow migration parity: discuss/plan backend routing, plan-check equivalence, and streaming parity across TUI/RPC/web contracts
+- ✓ Phase 04 validated parity safety gates: end-to-end planning parity suites and session interruption/resume recovery checks
+- ✓ Phase 05 revalidated requirement traceability: parity suites wired into default regression path with requirement-level verification evidence
+- ✓ Phase 06 validated stage-aware accounting contract propagation from workflow stage hints through backend send accounting
+- ✓ Phase 07 validated live operations: Copilot-backed parity, switchover rollback, and session resume flow evidence captured in live runs
 
 ### Active
 
@@ -58,10 +62,9 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 
 ## Current State
 
-- Phase 01 complete: adapter layer, tool bridge, event translation, create-session routing, and explicit Copilot session resume path are verified.
-- Phase 02 complete: request accounting and model routing are verified, including per-stage premium usage tracking and budget guardrails in the Copilot backend path.
-- Phase 03 complete: planning workflows migrated with parity verification and GO rollout assessment.
-- Next focus: Phase 04 parity validation + safe switchover.
+- Phase 01 through Phase 07 are complete for the v1 milestone roadmap.
+- Runtime foundation, planning parity, accounting telemetry propagation, and live operational safety checks have verification artifacts and regression coverage.
+- Current focus: milestone closeout and transition planning for v2 execution/verification workflow migration scope.
 
 ## Evolution
 
@@ -81,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 after Phase 03 completion*
+*Last updated: 2026-03-25 after Phase 07 completion*
