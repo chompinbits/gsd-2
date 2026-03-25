@@ -111,7 +111,10 @@ Plans:
   2. User sees stage propagated through adapter/runtime layers into accounting tracker
   3. User sees accounting records attributed to intended stage tiers instead of unknown fallback
   4. User sees integration tests proving stage propagation and tier accounting correctness
-**Plans**: 0 plans
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — Extend send contract, propagate stage through backend layers, wire workflows, integration tests
 
 ### Phase 7: Live Operational Validation (Parity, Resume, Switchover)
 **Goal**: Users have live-environment proof for parity, interruption resume, and safe default-backend switchover workflows
@@ -137,5 +140,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Planning Workflow Migration | 4/4 | Complete | 2026-03-25 |
 | 4. Parity Validation + Safe Switchover | 2/2 | Complete   | 2026-03-25 |
 | 5. Planning Parity Evidence + Requirement Revalidation | 1/1 | Complete | 2026-03-25 |
-| 6. Stage-Aware Accounting Contract Integration | 0/0 | Planned | - |
+| 6. Stage-Aware Accounting Contract Integration | 0/1 | Planned | - |
 | 7. Live Operational Validation (Parity, Resume, Switchover) | 0/0 | Planned | - |
