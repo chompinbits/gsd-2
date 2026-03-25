@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Tools and Events
 
 - [x] **TOOL-01**: User can run existing extension and skill tools through Copilot SDK without rewriting tool business logic.
-- [ ] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
+- [x] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
 - [x] **TOOL-03**: User sees command outcomes equivalent to current behavior for key planning commands.
 
 ### Premium Request Efficiency
@@ -27,8 +27,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Planning Workflow Migration
 
-- [ ] **PLAN-01**: User can run discuss/plan flows on Copilot SDK with parity to current command UX.
-- [ ] **PLAN-02**: User can run plan-check style validation in the migrated planning path.
+- [x] **PLAN-01**: User can run discuss/plan flows on Copilot SDK with parity to current command UX.
+- [x] **PLAN-02**: User can run plan-check style validation in the migrated planning path.
 
 ### Operational Safety
 
@@ -72,13 +72,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RUNT-02 | Phase 1 | Complete |
 | RUNT-03 | Phase 7 | Pending |
 | TOOL-01 | Phase 1 | Complete |
-| TOOL-02 | Phase 5 | Pending |
+| TOOL-02 | Phase 5 | Complete |
 | TOOL-03 | Phase 7 | Pending |
 | COST-01 | Phase 6 | Pending |
 | COST-02 | Phase 6 | Pending |
 | COST-03 | Phase 2 | Complete |
-| PLAN-01 | Phase 5 | Pending |
-| PLAN-02 | Phase 5 | Pending |
+| PLAN-01 | Phase 5 | Complete |
+| PLAN-02 | Phase 5 | Complete |
 | SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 7 | Pending |
 | SAFE-03 | Phase 7 | Pending |

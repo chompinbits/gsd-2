@@ -99,7 +99,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 05-01-PLAN.md — Wire parity suites into npm test + create requirement-ID verification evidence
+- [x] 05-01-PLAN.md — Wire parity suites into npm test + create requirement-ID verification evidence
 
 ### Phase 6: Stage-Aware Accounting Contract Integration
 **Goal**: Users receive accurate stage-based accounting telemetry because workflow stage metadata is propagated end-to-end
@@ -136,6 +136,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 2. Request Accounting + Model Routing | 3/3 | Complete    | 2026-03-25 |
 | 3. Planning Workflow Migration | 4/4 | Complete | 2026-03-25 |
 | 4. Parity Validation + Safe Switchover | 2/2 | Complete   | 2026-03-25 |
-| 5. Planning Parity Evidence + Requirement Revalidation | 0/1 | In Progress | - |
+| 5. Planning Parity Evidence + Requirement Revalidation | 1/1 | Complete | 2026-03-25 |
 | 6. Stage-Aware Accounting Contract Integration | 0/0 | Planned | - |
 | 7. Live Operational Validation (Parity, Resume, Switchover) | 0/0 | Planned | - |
