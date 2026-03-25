@@ -266,7 +266,7 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 	const sessionManager = options.sessionManager ?? SessionManager.create(cwd);
 	const existingSession = sessionManager.buildSessionContext();
 	const hasExistingSession = existingSession.messages.length > 0 || sessionManager.getBranch().length > 0;
-	const backend = options.backend ?? "pi";
+	const backend = options.backend ?? settingsManager.getDefaultBackend() ?? "pi";
 	let copilotSessionHandle: BackendSessionHandle | undefined;
 
 	if (backend === "copilot") {

@@ -151,6 +151,7 @@ export interface Settings {
 	fallback?: FallbackSettings;
 	modelDiscovery?: ModelDiscoverySettings;
 	editMode?: "standard" | "hashline"; // Edit tool mode: "standard" (text match) or "hashline" (LINE#ID anchors). Default: "standard"
+	defaultBackend?: "pi" | "copilot"; // Session backend runtime. Default: "pi". Set to "copilot" to enable GitHub Copilot SDK.
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -709,6 +710,14 @@ export class SettingsManager {
 
 	setDefaultThinkingLevel(level: "off" | "minimal" | "low" | "medium" | "high" | "xhigh"): void {
 		this.setGlobalSetting("defaultThinkingLevel", level);
+	}
+
+	getDefaultBackend(): "pi" | "copilot" | undefined {
+		return this.settings.defaultBackend;
+	}
+
+	setDefaultBackend(backend: "pi" | "copilot"): void {
+		this.setGlobalSetting("defaultBackend", backend);
 	}
 
 	getTransport(): TransportSetting {
