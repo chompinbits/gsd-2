@@ -126,7 +126,11 @@ Plans:
   2. User can interrupt and resume a real Copilot-backed CLI planning session with verified continuity
   3. User sees a documented live switchover plus rollback workflow execute successfully
   4. User sees verification artifacts updated to clear human-needed flow checks from milestone audit
-**Plans**: 0 plans
+**Plans**: 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Live parity + switchover + resume test harnesses
+- [ ] 07-02-PLAN.md — Verification evidence collection + live execution checkpoint
 
 ## Progress
 
@@ -141,4 +145,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 4. Parity Validation + Safe Switchover | 2/2 | Complete   | 2026-03-25 |
 | 5. Planning Parity Evidence + Requirement Revalidation | 1/1 | Complete | 2026-03-25 |
 | 6. Stage-Aware Accounting Contract Integration | 1/1 | Complete   | 2026-03-25 |
-| 7. Live Operational Validation (Parity, Resume, Switchover) | 0/0 | Planned | - |
+| 7. Live Operational Validation (Parity, Resume, Switchover) | 0/2 | Planned | - |
