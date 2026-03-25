@@ -289,6 +289,26 @@ if (cliFlags.messages[0] === 'discuss-phase') {
   process.exit(0)
 }
 
+// `gsd plan-phase [objective]` — run plan-phase workflow with explicit backend selection (D-09)
+// Backend: --backend <pi|copilot> flag, then GSD_PLANNING_BACKEND env var, then 'pi' default.
+// Accounting: plan-phase → standard tier (1×) per Phase 2 stage routing.
+if (cliFlags.messages[0] === 'plan-phase') {
+  const { runPlanWorkflow } = await import('./workflows/plan-phase.js')
+  const rawBackend = cliFlags.backend || process.env.GSD_PLANNING_BACKEND || 'pi'
+  const backend = (rawBackend === 'copilot' ? 'copilot' : 'pi') as 'pi' | 'copilot'
+  // D-10: log backend and accounting tier at command start
+  process.stderr.write(`[plan-phase] backend=${backend} tier=standard\n`)
+  const objective = cliFlags.messages.slice(1).join(' ') || 'phase planning'
+  const result = await runPlanWorkflow(
+    { objective, cwd: process.cwd() },
+    { backend },
+  )
+  // D-10: log summary in final output for parity tracing
+  process.stderr.write(`[plan-phase] complete: ${result.phases.length} phases, ${result.tasks.length} tasks, backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
 // Pi's tool bootstrap can mis-detect already-installed fd/rg on some systems
 // because spawnSync(..., ["--version"]) returns EPERM despite a zero exit code.
 // Provision local managed binaries first so Pi sees them without probing PATH.
