@@ -18,6 +18,7 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 - ✓ Tooling already supports cost and token visibility across workflows — existing
 - ✓ Phase 01 validated Copilot adapter foundations: create, resume, destroy, and tool bridging now work on the Copilot backend while preserving the Pi default path
 - ✓ Phase 02 validated request accounting and model routing: multiplier tiers, per-stage usage tracking, budget guardrails, and telemetry/session persistence on the Copilot path
+- ✓ Phase 03 validated planning workflow migration parity: discuss/plan backend routing, plan-check equivalence, and streaming parity across TUI/RPC/web contracts
 
 ### Active
 
@@ -59,7 +60,8 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 
 - Phase 01 complete: adapter layer, tool bridge, event translation, create-session routing, and explicit Copilot session resume path are verified.
 - Phase 02 complete: request accounting and model routing are verified, including per-stage premium usage tracking and budget guardrails in the Copilot backend path.
-- Next focus: Phase 03 planning workflow migration.
+- Phase 03 complete: planning workflows migrated with parity verification and GO rollout assessment.
+- Next focus: Phase 04 parity validation + safe switchover.
 
 ## Evolution
 
@@ -79,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 after Phase 02 completion*
+*Last updated: 2026-03-25 after Phase 03 completion*
