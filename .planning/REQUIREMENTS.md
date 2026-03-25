@@ -70,18 +70,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | RUNT-01 | Phase 1 | Complete |
 | RUNT-02 | Phase 1 | Complete |
-| RUNT-03 | Phase 7 | Pending |
+| RUNT-03 | Phase 7 | Complete |
 | TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 5 | Complete |
-| TOOL-03 | Phase 7 | Pending |
+| TOOL-03 | Phase 7 | Complete |
 | COST-01 | Phase 6 | Complete |
 | COST-02 | Phase 6 | Complete |
 | COST-03 | Phase 2 | Complete |
 | PLAN-01 | Phase 5 | Complete |
 | PLAN-02 | Phase 5 | Complete |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 7 | Pending |
-| SAFE-03 | Phase 7 | Pending |
+| SAFE-02 | Phase 7 | Complete |
+| SAFE-03 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 14 total

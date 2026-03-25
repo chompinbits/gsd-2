@@ -129,7 +129,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Live parity + switchover + resume test harnesses
+- [x] 07-01-PLAN.md — Live parity + switchover + resume test harnesses
 - [ ] 07-02-PLAN.md — Verification evidence collection + live execution checkpoint
 
 ## Progress
