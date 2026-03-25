@@ -10,7 +10,7 @@
  * Source: packages/pi-coding-agent/src/core/backends/accounting/stage-router.ts
  *
  * Used by:
- *  - `gsd plan-phase` CLI subcommand (backend selection via --backend flag)
+ *  - `gsd plan-phase` CLI subcommand (backend selection via /settings defaultBackend)
  *  - Parity tests in plan 03-03
  */
 

@@ -28,6 +28,7 @@ export interface SettingsConfig {
 	autoResizeImages: boolean;
 	blockImages: boolean;
 	enableSkillCommands: boolean;
+	defaultBackend: "pi" | "copilot";
 	steeringMode: "all" | "one-at-a-time";
 	followUpMode: "all" | "one-at-a-time";
 	transport: Transport;
@@ -53,6 +54,7 @@ export interface SettingsCallbacks {
 	onAutoResizeImagesChange: (enabled: boolean) => void;
 	onBlockImagesChange: (blocked: boolean) => void;
 	onEnableSkillCommandsChange: (enabled: boolean) => void;
+	onDefaultBackendChange: (backend: "pi" | "copilot") => void;
 	onSteeringModeChange: (mode: "all" | "one-at-a-time") => void;
 	onFollowUpModeChange: (mode: "all" | "one-at-a-time") => void;
 	onTransportChange: (transport: Transport) => void;
@@ -175,6 +177,13 @@ export class SettingsSelectorComponent extends Container {
 				description: "Preferred transport for providers that support multiple transports",
 				currentValue: config.transport,
 				values: ["sse", "websocket", "auto"],
+			},
+			{
+				id: "default-backend",
+				label: "Default backend",
+				description: "Backend used for new sessions",
+				currentValue: config.defaultBackend,
+				values: ["pi", "copilot"],
 			},
 			{
 				id: "hide-thinking",
@@ -378,6 +387,9 @@ export class SettingsSelectorComponent extends Container {
 						break;
 					case "skill-commands":
 						callbacks.onEnableSkillCommandsChange(newValue === "true");
+						break;
+					case "default-backend":
+						callbacks.onDefaultBackendChange(newValue as "pi" | "copilot");
 						break;
 					case "steering-mode":
 						callbacks.onSteeringModeChange(newValue as "all" | "one-at-a-time");

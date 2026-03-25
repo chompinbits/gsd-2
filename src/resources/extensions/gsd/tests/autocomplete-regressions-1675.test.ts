@@ -81,3 +81,14 @@ test("bare /gsd skip shows usage and does not fall through to unknown-command wa
   );
 });
 
+test("/gsd discuss --backend copilot remains an unknown command", async () => {
+  const ctx = createMockCtx();
+
+  await handleGSDCommand("discuss --backend copilot", ctx as any, {} as any);
+
+  assert.ok(
+    ctx.notifications.some((n) => n.message.startsWith("Unknown: /gsd discuss --backend copilot")),
+    "should emit unknown-command warning for discuss backend args",
+  );
+});
+

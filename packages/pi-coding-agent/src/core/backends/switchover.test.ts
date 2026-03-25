@@ -18,6 +18,14 @@ const settingsSource = readFileSync(
 	new URL("../settings-manager.ts", import.meta.url),
 	"utf8",
 );
+const settingsSelectorSource = readFileSync(
+	new URL("../../modes/interactive/components/settings-selector.ts", import.meta.url),
+	"utf8",
+);
+const interactiveModeSource = readFileSync(
+	new URL("../../modes/interactive/interactive-mode.ts", import.meta.url),
+	"utf8",
+);
 
 describe("Config-driven backend selection — source shape", () => {
 	it("sdk.ts reads settingsManager.getDefaultBackend() when options.backend is not set", () => {
@@ -70,6 +78,28 @@ describe("Settings defaultBackend field", () => {
 		assert.ok(
 			settingsSource.includes("setDefaultBackend("),
 			"SettingsManager must have setDefaultBackend() method",
+		);
+	});
+
+	it("/settings selector includes a default backend option", () => {
+		assert.ok(
+			settingsSelectorSource.includes('id: "default-backend"'),
+			"settings selector must include a default-backend setting row",
+		);
+		assert.ok(
+			settingsSelectorSource.includes('values: ["pi", "copilot"]'),
+			"default-backend setting must allow pi and copilot values",
+		);
+	});
+
+	it("interactive mode wires /settings default backend to SettingsManager", () => {
+		assert.ok(
+			interactiveModeSource.includes('defaultBackend: this.settingsManager.getDefaultBackend() ?? "pi"'),
+			"interactive mode must pass defaultBackend into settings selector config",
+		);
+		assert.ok(
+			interactiveModeSource.includes("this.settingsManager.setDefaultBackend(backend);"),
+			"interactive mode must persist default backend changes",
 		);
 	});
 });

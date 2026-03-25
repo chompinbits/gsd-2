@@ -59,12 +59,6 @@ interface CliFlags {
   /** Set by `gsd sessions` when the user picks a specific session to resume */
   _selectedSessionPath?: string
 
-  /**
-   * Planning backend runtime selection.
-   * Parsed from --backend <pi|copilot> or GSD_PLANNING_BACKEND env var.
-   * Default: 'pi' (D-09: keep Pi as default until Phase 4 switchover).
-   */
-  backend?: 'pi' | 'copilot'
 }
 
 function exitIfManagedResourcesAreNewer(currentAgentDir: string): void {
@@ -109,9 +103,10 @@ function parseCliArgs(argv: string[]): CliFlags {
     } else if (arg === '--version' || arg === '-v') {
       process.stdout.write((process.env.GSD_VERSION || '0.0.0') + '\n')
       process.exit(0)
-    } else if (arg === '--backend' && i + 1 < args.length) {
-      const b = args[++i]
-      if (b === 'pi' || b === 'copilot') flags.backend = b
+    } else if (arg === '--backend') {
+      // Deprecated: planning backend now comes from /settings (defaultBackend).
+      // Keep consuming this legacy flag to avoid shifting positional args.
+      if (i + 1 < args.length && !args[i + 1].startsWith('-')) i++
     } else if (arg === '--worktree' || arg === '-w') {
       // -w with no value → auto-generate name; -w <name> → use that name
       if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
@@ -137,6 +132,15 @@ function parseCliArgs(argv: string[]): CliFlags {
 
 const cliFlags = parseCliArgs(process.argv)
 const isPrintMode = cliFlags.print || cliFlags.mode !== undefined
+
+function resolvePlanningBackendFromSettings(): 'pi' | 'copilot' {
+  try {
+    const planningSettings = SettingsManager.create(process.cwd(), agentDir)
+    return planningSettings.getDefaultBackend() ?? 'pi'
+  } catch {
+    return 'pi'
+  }
+}
 
 // Early resource-skew check — must run before TTY gate so version mismatch
 // errors surface even in non-TTY environments.
@@ -270,12 +274,11 @@ if (cliFlags.messages[0] === 'headless') {
   process.exit(0)
 }
 
-// `gsd discuss-phase [topic]` — run discuss-phase workflow with explicit backend selection (D-09)
-// Backend: --backend <pi|copilot> flag, then GSD_PLANNING_BACKEND env var, then 'pi' default.
+// `gsd discuss-phase [topic]` — run discuss-phase workflow using /settings backend (defaultBackend).
+// If unset or unavailable, fallback is 'pi'.
 if (cliFlags.messages[0] === 'discuss-phase') {
   const { runDiscussWorkflow } = await import('./workflows/discuss-phase.js')
-  const rawBackend = cliFlags.backend || process.env.GSD_PLANNING_BACKEND || 'pi'
-  const backend = (rawBackend === 'copilot' ? 'copilot' : 'pi') as 'pi' | 'copilot'
+  const backend = resolvePlanningBackendFromSettings()
   // D-10: log backend selection at command start
   process.stderr.write(`[discuss] backend=${backend}\n`)
   const topic = cliFlags.messages.slice(1).join(' ') || 'phase planning'
@@ -289,13 +292,12 @@ if (cliFlags.messages[0] === 'discuss-phase') {
   process.exit(0)
 }
 
-// `gsd plan-phase [objective]` — run plan-phase workflow with explicit backend selection (D-09)
-// Backend: --backend <pi|copilot> flag, then GSD_PLANNING_BACKEND env var, then 'pi' default.
+// `gsd plan-phase [objective]` — run plan-phase workflow using /settings backend (defaultBackend).
+// If unset or unavailable, fallback is 'pi'.
 // Accounting: plan-phase → standard tier (1×) per Phase 2 stage routing.
 if (cliFlags.messages[0] === 'plan-phase') {
   const { runPlanWorkflow } = await import('./workflows/plan-phase.js')
-  const rawBackend = cliFlags.backend || process.env.GSD_PLANNING_BACKEND || 'pi'
-  const backend = (rawBackend === 'copilot' ? 'copilot' : 'pi') as 'pi' | 'copilot'
+  const backend = resolvePlanningBackendFromSettings()
   // D-10: log backend and accounting tier at command start
   process.stderr.write(`[plan-phase] backend=${backend} tier=standard\n`)
   const objective = cliFlags.messages.slice(1).join(' ') || 'phase planning'

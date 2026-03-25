@@ -7,7 +7,7 @@
  * between both paths (D-01, D-03).
  *
  * Used by:
- *  - `gsd discuss-phase` CLI subcommand (backend selection via --backend flag)
+ *  - `gsd discuss-phase` CLI subcommand (backend selection via /settings defaultBackend)
  *  - Parity tests in plan 03-03
  */
 
