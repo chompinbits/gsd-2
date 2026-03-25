@@ -5,7 +5,7 @@ import { getAgentDir, getDocsPath } from "../config.js";
 import { AgentSession } from "./agent-session.js";
 import { AuthStorage } from "./auth-storage.js";
 import type { CopilotClientManager } from "./backends/copilot-client-manager.js";
-import type { BackendSessionHandle } from "./backends/backend-interface.js";
+import type { BackendSessionHandle, SendOptions } from "./backends/backend-interface.js";
 import { DEFAULT_THINKING_LEVEL } from "./defaults.js";
 import type { ExtensionRunner, LoadExtensionsResult, ToolDefinition } from "./extensions/index.js";
 import { convertToLlm } from "./messages.js";
@@ -80,6 +80,8 @@ export interface CreateAgentSessionOptions {
 
 	/** Backend runtime to use. Default: "pi" (existing). "copilot" enables GitHub Copilot SDK. */
 	backend?: "pi" | "copilot";
+	/** Optional workflow stage metadata propagated to backend accounting. */
+	stage?: string;
 }
 
 /** Result from createAgentSession */
@@ -191,8 +193,8 @@ function withCopilotSessionCleanup(
 		get sessionId() {
 			return handle.sessionId;
 		},
-		send(prompt: string, attachments?: unknown[]) {
-			return handle.send(prompt, attachments);
+		send(prompt: string, options?: SendOptions) {
+			return handle.send(prompt, options);
 		},
 		subscribe(listener) {
 			return handle.subscribe(listener);
@@ -287,6 +289,7 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 				configDir: agentDir,
 				sessionId: sessionManager.getSessionId(),
 				streaming: true,
+				stage: options.stage,
 			};
 			const rawCopilotSessionHandle = hasExistingSession
 				? await copilotBackend.resumeSession(sessionManager.getSessionId(), sessionConfig)

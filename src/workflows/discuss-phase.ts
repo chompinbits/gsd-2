@@ -159,7 +159,7 @@ export async function runDiscussWorkflow(
   const backend = options.backend ?? 'pi'
 
   // D-10: telemetry log — backend selection visible for parity regression diagnosis
-  process.stderr.write(`[discuss] backend=${backend}\n`)
+  process.stderr.write(`[discuss] backend=${backend} stage=discuss-phase\n`)
 
   const cwd = config.cwd ?? process.cwd()
 
@@ -173,7 +173,7 @@ export async function runDiscussWorkflow(
 
   // Session creation routes to Pi or Copilot backend based on `backend` param.
   // This is the only backend-specific branch — the rest of the flow is identical (D-01).
-  const { session } = await createAgentSession({
+  const sessionOptions = {
     authStorage,
     modelRegistry,
     settingsManager,
@@ -181,7 +181,9 @@ export async function runDiscussWorkflow(
     resourceLoader,
     backend,
     cwd,
-  })
+    stage: 'discuss-phase',
+  }
+  const { session } = await createAgentSession(sessionOptions as Parameters<typeof createAgentSession>[0])
 
   // Bind extensions minimally — no UI context needed for programmatic execution
   await session.bindExtensions({

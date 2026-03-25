@@ -8,11 +8,17 @@ export interface BackendConfig {
 	configDir?: string;
 	sessionId?: string;
 	streaming?: boolean;
+	stage?: string;
+}
+
+export interface SendOptions {
+	attachments?: unknown[];
+	stage?: string;
 }
 
 export interface BackendSessionHandle {
 	readonly sessionId: string;
-	send(prompt: string, attachments?: unknown[]): Promise<string>;
+	send(prompt: string, options?: SendOptions): Promise<string>;
 	subscribe(listener: (event: AgentEvent) => void): () => void;
 	destroy(): Promise<void>;
 	abort(): Promise<void>;

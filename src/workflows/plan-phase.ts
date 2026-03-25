@@ -336,7 +336,7 @@ export async function runPlanWorkflow(
   const backend = options.backend ?? 'pi'
 
   // D-10: telemetry log — backend and accounting tier visible for parity regression diagnosis
-  process.stderr.write(`[plan-phase] backend=${backend} tier=${PLAN_PHASE_ACCOUNTING_TIER}\n`)
+  process.stderr.write(`[plan-phase] backend=${backend} tier=${PLAN_PHASE_ACCOUNTING_TIER} stage=plan-phase\n`)
 
   const cwd = config.cwd ?? process.cwd()
 
@@ -350,7 +350,7 @@ export async function runPlanWorkflow(
 
   // Session creation routes to Pi or Copilot backend based on `backend` param.
   // This is the only backend-specific branch — plan parsing is identical (D-01).
-  const { session } = await createAgentSession({
+  const sessionOptions = {
     authStorage,
     modelRegistry,
     settingsManager,
@@ -358,7 +358,9 @@ export async function runPlanWorkflow(
     resourceLoader,
     backend,
     cwd,
-  })
+    stage: 'plan-phase',
+  }
+  const { session } = await createAgentSession(sessionOptions as Parameters<typeof createAgentSession>[0])
 
   // Bind extensions minimally — no UI context needed for programmatic execution
   await session.bindExtensions({

@@ -74,8 +74,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 5 | Complete |
 | TOOL-03 | Phase 7 | Pending |
-| COST-01 | Phase 6 | Pending |
-| COST-02 | Phase 6 | Pending |
+| COST-01 | Phase 6 | Complete |
+| COST-02 | Phase 6 | Complete |
 | COST-03 | Phase 2 | Complete |
 | PLAN-01 | Phase 5 | Complete |
 | PLAN-02 | Phase 5 | Complete |

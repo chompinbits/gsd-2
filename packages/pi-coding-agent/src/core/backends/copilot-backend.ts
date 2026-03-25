@@ -7,26 +7,39 @@ import {
 	getMultiplierValue,
 	getStageMultiplierTier,
 } from "./accounting/index.js";
-import type { BackendConfig, BackendSessionHandle, SessionBackend } from "./backend-interface.js";
+import type { BackendConfig, BackendSessionHandle, SendOptions, SessionBackend } from "./backend-interface.js";
 import { CopilotClientManager } from "./copilot-client-manager.js";
 import type { CopilotSessionEvent } from "./event-translator.js";
 import { isSessionError, isSessionIdle, translateCopilotEvent } from "./event-translator.js";
 import { bridgeAllTools } from "./tool-bridge.js";
 
 class AccountingSessionHandle implements BackendSessionHandle {
+	private readonly inner: BackendSessionHandle;
+	private readonly tracker: RequestTracker;
+	private readonly guard: BudgetGuard;
+	private readonly model: string;
+	private readonly defaultStage: string;
+
 	constructor(
-		private readonly inner: BackendSessionHandle,
-		private readonly tracker: RequestTracker,
-		private readonly guard: BudgetGuard,
-		private readonly model: string,
-	) {}
+		inner: BackendSessionHandle,
+		tracker: RequestTracker,
+		guard: BudgetGuard,
+		model: string,
+		defaultStage = "unknown",
+	) {
+		this.inner = inner;
+		this.tracker = tracker;
+		this.guard = guard;
+		this.model = model;
+		this.defaultStage = defaultStage;
+	}
 
 	get sessionId(): string {
 		return this.inner.sessionId;
 	}
 
-	async send(prompt: string, attachments?: unknown[]): Promise<string> {
-		const stage = "unknown";
+	async send(prompt: string, options?: SendOptions): Promise<string> {
+		const stage = options?.stage ?? this.defaultStage;
 		const tier = getStageMultiplierTier(stage);
 		const cost = getMultiplierValue(tier);
 
@@ -35,7 +48,7 @@ class AccountingSessionHandle implements BackendSessionHandle {
 			process.stderr.write(`[gsd] Budget warning: ${checkResult.message}\n`);
 		}
 
-		const response = await this.inner.send(prompt, attachments);
+		const response = await this.inner.send(prompt, options);
 
 		this.tracker.record(this.model, stage, tier);
 
@@ -56,14 +69,18 @@ class AccountingSessionHandle implements BackendSessionHandle {
 }
 
 class CopilotSessionHandle implements BackendSessionHandle {
-	constructor(private readonly sdkSession: any) {}
+	private readonly sdkSession: any;
+
+	constructor(sdkSession: any) {
+		this.sdkSession = sdkSession;
+	}
 
 	get sessionId(): string {
 		return String(this.sdkSession.sessionId);
 	}
 
-	async send(prompt: string, attachments?: unknown[]): Promise<string> {
-		const result = await this.sdkSession.sendAndWait({ prompt, attachments });
+	async send(prompt: string, options?: SendOptions): Promise<string> {
+		const result = await this.sdkSession.sendAndWait({ prompt, attachments: options?.attachments });
 		return String(result?.data?.content ?? "");
 	}
 
@@ -91,11 +108,14 @@ class CopilotSessionHandle implements BackendSessionHandle {
 
 export class CopilotSessionBackend implements SessionBackend {
 	readonly name = "copilot";
+	private readonly clientManager: CopilotClientManager;
 
 	private accountingConfig?: AccountingConfig;
 	private _currentTracker?: RequestTracker;
 
-	constructor(private readonly clientManager: CopilotClientManager) {}
+	constructor(clientManager: CopilotClientManager) {
+		this.clientManager = clientManager;
+	}
 
 	setAccountingConfig(config: AccountingConfig): void {
 		this.accountingConfig = config;
@@ -132,7 +152,7 @@ export class CopilotSessionBackend implements SessionBackend {
 			const tracker = new RequestTracker(sessionId, this.accountingConfig.budgetLimit);
 			const guard = new BudgetGuard(this.accountingConfig, tracker);
 			this._currentTracker = tracker;
-			return new AccountingSessionHandle(rawHandle, tracker, guard, config.model ?? "unknown");
+			return new AccountingSessionHandle(rawHandle, tracker, guard, config.model ?? "unknown", config.stage ?? "unknown");
 		}
 
 		return rawHandle;
@@ -154,7 +174,7 @@ export class CopilotSessionBackend implements SessionBackend {
 			const tracker = new RequestTracker(sessionId, this.accountingConfig.budgetLimit);
 			const guard = new BudgetGuard(this.accountingConfig, tracker);
 			this._currentTracker = tracker;
-			return new AccountingSessionHandle(rawHandle, tracker, guard, config.model ?? "unknown");
+			return new AccountingSessionHandle(rawHandle, tracker, guard, config.model ?? "unknown", config.stage ?? "unknown");
 		}
 
 		return rawHandle;

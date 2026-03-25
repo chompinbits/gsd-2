@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Planning Workflow Migration** - Migrate discuss and plan commands to Copilot SDK with streaming parity (completed 2026-03-25)
 - [x] **Phase 4: Parity Validation + Safe Switchover** - Prove command equivalence, session resilience, and enable safe default backend switch (completed 2026-03-25)
 - [ ] **Phase 5: Planning Parity Evidence + Requirement Revalidation** - Close orphaned planning/streaming requirements and restore verification traceability gates
-- [ ] **Phase 6: Stage-Aware Accounting Contract Integration** - Close stage metadata propagation gap between adapter interface and accounting runtime
+- [x] **Phase 6: Stage-Aware Accounting Contract Integration** - Close stage metadata propagation gap between adapter interface and accounting runtime (completed 2026-03-25)
 - [ ] **Phase 7: Live Operational Validation (Parity, Resume, Switchover)** - Close remaining live-environment parity, interruption-resume, and switchover verification gaps
 
 ## Phase Details
@@ -111,10 +111,10 @@ Plans:
   2. User sees stage propagated through adapter/runtime layers into accounting tracker
   3. User sees accounting records attributed to intended stage tiers instead of unknown fallback
   4. User sees integration tests proving stage propagation and tier accounting correctness
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 06-01-PLAN.md — Extend send contract, propagate stage through backend layers, wire workflows, integration tests
+- [x] 06-01-PLAN.md — Extend send contract, propagate stage through backend layers, wire workflows, integration tests
 
 ### Phase 7: Live Operational Validation (Parity, Resume, Switchover)
 **Goal**: Users have live-environment proof for parity, interruption resume, and safe default-backend switchover workflows
@@ -140,5 +140,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Planning Workflow Migration | 4/4 | Complete | 2026-03-25 |
 | 4. Parity Validation + Safe Switchover | 2/2 | Complete   | 2026-03-25 |
 | 5. Planning Parity Evidence + Requirement Revalidation | 1/1 | Complete | 2026-03-25 |
-| 6. Stage-Aware Accounting Contract Integration | 0/1 | Planned | - |
+| 6. Stage-Aware Accounting Contract Integration | 1/1 | Complete   | 2026-03-25 |
 | 7. Live Operational Validation (Parity, Resume, Switchover) | 0/0 | Planned | - |
