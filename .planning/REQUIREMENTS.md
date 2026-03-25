@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Tools and Events
 
 - [x] **TOOL-01**: User can run existing extension and skill tools through Copilot SDK without rewriting tool business logic.
-- [ ] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
+- [x] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
 - [ ] **TOOL-03**: User sees command outcomes equivalent to current behavior for key planning commands.
 
 ### Premium Request Efficiency
@@ -72,7 +72,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RUNT-02 | Phase 1 | Complete |
 | RUNT-03 | Phase 1 | Complete |
 | TOOL-01 | Phase 1 | Complete |
-| TOOL-02 | Phase 3 | Pending |
+| TOOL-02 | Phase 3 | Complete |
 | TOOL-03 | Phase 4 | Pending |
 | COST-01 | Phase 2 | Complete |
 | COST-02 | Phase 2 | Complete |

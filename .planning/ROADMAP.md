@@ -67,7 +67,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Copilot discuss workflow migration and parity baseline
 - [x] 03-02-PLAN.md — Copilot plan workflow migration and artifact validation
-- [ ] 03-03-PLAN.md — Parity testing + integration validation
+- [x] 03-03-PLAN.md — Parity testing + integration validation
 
 ### Phase 4: Parity Validation + Safe Switchover
 **Goal**: Users have verified command parity and session resilience before the Copilot SDK backend becomes the default
