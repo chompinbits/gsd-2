@@ -8,10 +8,10 @@ let backend: any;
 
 try {
   const { CopilotClientManager } = await import(
-    "../../packages/pi-coding-agent/src/core/backends/copilot-client-manager.ts"
+    "../../packages/pi-coding-agent/dist/core/backends/copilot-client-manager.js"
   );
   const { CopilotSessionBackend } = await import(
-    "../../packages/pi-coding-agent/src/core/backends/copilot-backend.ts"
+    "../../packages/pi-coding-agent/dist/core/backends/copilot-backend.js"
   );
 
   manager = new CopilotClientManager();

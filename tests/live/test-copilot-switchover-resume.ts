@@ -5,12 +5,12 @@ if (process.env.GSD_LIVE_TESTS !== "1") {
 
 try {
   const { CopilotClientManager } = await import(
-    "../../packages/pi-coding-agent/src/core/backends/copilot-client-manager.ts"
+    "../../packages/pi-coding-agent/dist/core/backends/copilot-client-manager.js"
   );
   const { CopilotSessionBackend } = await import(
-    "../../packages/pi-coding-agent/src/core/backends/copilot-backend.ts"
+    "../../packages/pi-coding-agent/dist/core/backends/copilot-backend.js"
   );
-  const { SettingsManager } = await import("../../packages/pi-coding-agent/src/core/settings-manager.ts");
+  const { SettingsManager } = await import("../../packages/pi-coding-agent/dist/core/settings-manager.js");
 
   const sm = SettingsManager.inMemory();
 
