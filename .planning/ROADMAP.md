@@ -61,8 +61,13 @@ Plans:
   2. User can run `/gsd-plan-phase` through the Copilot SDK backend and get a valid PLAN.md output
   3. User receives streaming output during planning commands with the same display behavior across TUI, headless, and web surfaces
   4. User sees plan-check validation produce equivalent pass/fail results on the migrated path
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [x] 03-01-PLAN.md — Copilot discuss workflow migration and parity baseline
+- [ ] 03-02-PLAN.md — Copilot plan workflow migration and artifact validation
+- [ ] 03-03-PLAN.md — Parity testing + integration validation
 
 ### Phase 4: Parity Validation + Safe Switchover
 **Goal**: Users have verified command parity and session resilience before the Copilot SDK backend becomes the default
@@ -82,6 +87,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Adapter Layer + SDK Foundation | 4/4 | Complete | 2026-03-24 |
-| 2. Request Accounting + Model Routing | 2/3 | Complete    | 2026-03-25 |
-| 3. Planning Workflow Migration | 0/0 | Not started | - |
+| 2. Request Accounting + Model Routing | 3/3 | Complete    | 2026-03-25 |
+| 3. Planning Workflow Migration | 1/4 | In Progress|  |
 | 4. Parity Validation + Safe Switchover | 0/0 | Not started | - |
