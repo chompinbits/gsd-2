@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Tools and Events
 
 - [x] **TOOL-01**: User can run existing extension and skill tools through Copilot SDK without rewriting tool business logic.
-- [x] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
+- [ ] **TOOL-02**: User receives streaming output and completion events with behavior parity across TUI, headless, and web surfaces.
 - [x] **TOOL-03**: User sees command outcomes equivalent to current behavior for key planning commands.
 
 ### Premium Request Efficiency
@@ -27,8 +27,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Planning Workflow Migration
 
-- [x] **PLAN-01**: User can run discuss/plan flows on Copilot SDK with parity to current command UX.
-- [x] **PLAN-02**: User can run plan-check style validation in the migrated planning path.
+- [ ] **PLAN-01**: User can run discuss/plan flows on Copilot SDK with parity to current command UX.
+- [ ] **PLAN-02**: User can run plan-check style validation in the migrated planning path.
 
 ### Operational Safety
 
@@ -70,18 +70,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | RUNT-01 | Phase 1 | Complete |
 | RUNT-02 | Phase 1 | Complete |
-| RUNT-03 | Phase 1 | Complete |
+| RUNT-03 | Phase 7 | Pending |
 | TOOL-01 | Phase 1 | Complete |
-| TOOL-02 | Phase 3 | Complete |
-| TOOL-03 | Phase 4 | Complete |
-| COST-01 | Phase 2 | Complete |
-| COST-02 | Phase 2 | Complete |
+| TOOL-02 | Phase 5 | Pending |
+| TOOL-03 | Phase 7 | Pending |
+| COST-01 | Phase 6 | Pending |
+| COST-02 | Phase 6 | Pending |
 | COST-03 | Phase 2 | Complete |
-| PLAN-01 | Phase 3 | Complete |
-| PLAN-02 | Phase 3 | Complete |
+| PLAN-01 | Phase 5 | Pending |
+| PLAN-02 | Phase 5 | Pending |
 | SAFE-01 | Phase 1 | Complete |
-| SAFE-02 | Phase 4 | Complete |
-| SAFE-03 | Phase 4 | Complete |
+| SAFE-02 | Phase 7 | Pending |
+| SAFE-03 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 14 total
@@ -90,4 +90,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-24*
-*Last updated: 2026-03-24 after roadmap creation*
+*Last updated: 2026-03-25 after milestone audit gap planning*

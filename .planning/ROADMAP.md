@@ -16,6 +16,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Request Accounting + Model Routing** - Add multiplier-aware model routing, premium-request telemetry, and budget guardrails (completed 2026-03-25)
 - [x] **Phase 3: Planning Workflow Migration** - Migrate discuss and plan commands to Copilot SDK with streaming parity (completed 2026-03-25)
 - [x] **Phase 4: Parity Validation + Safe Switchover** - Prove command equivalence, session resilience, and enable safe default backend switch (completed 2026-03-25)
+- [ ] **Phase 5: Planning Parity Evidence + Requirement Revalidation** - Close orphaned planning/streaming requirements and restore verification traceability gates
+- [ ] **Phase 6: Stage-Aware Accounting Contract Integration** - Close stage metadata propagation gap between adapter interface and accounting runtime
+- [ ] **Phase 7: Live Operational Validation (Parity, Resume, Switchover)** - Close remaining live-environment parity, interruption-resume, and switchover verification gaps
 
 ## Phase Details
 
@@ -83,10 +86,46 @@ Plans:
 - [x] 04-01-PLAN.md — E2E parity validation tests and session resume/interruption recovery tests
 - [x] 04-02-PLAN.md — Config-driven default backend selection and switchover safety tests
 
+### Phase 5: Planning Parity Evidence + Requirement Revalidation
+**Goal**: Users regain complete requirement-level evidence for migrated planning flows and parity suites in default regression gates
+**Depends on**: Phase 4
+**Requirements**: TOOL-02, PLAN-01, PLAN-02
+**Gap Closure**: Closes orphaned requirement evidence and parity-suite test-path integration gap from milestone audit
+**Success Criteria** (what must be TRUE):
+  1. User sees parity suites included in the default npm test path and CI regression gate
+  2. User sees explicit requirement-ID evidence for TOOL-02, PLAN-01, and PLAN-02 in verification artifacts
+  3. User sees discuss/plan/plan-check parity evidence linked across verification and summary frontmatter
+  4. User sees milestone traceability rows for the three orphaned requirements return to a verifiable satisfied state
+**Plans**: 0 plans
+
+### Phase 6: Stage-Aware Accounting Contract Integration
+**Goal**: Users receive accurate stage-based accounting telemetry because workflow stage metadata is propagated end-to-end
+**Depends on**: Phase 5
+**Requirements**: COST-01, COST-02
+**Gap Closure**: Closes Phase 01 -> Phase 02 stage metadata integration gap (`stage=unknown` fallback)
+**Success Criteria** (what must be TRUE):
+  1. User sees backend session send contract carry stage metadata for migrated planning calls
+  2. User sees stage propagated through adapter/runtime layers into accounting tracker
+  3. User sees accounting records attributed to intended stage tiers instead of unknown fallback
+  4. User sees integration tests proving stage propagation and tier accounting correctness
+**Plans**: 0 plans
+
+### Phase 7: Live Operational Validation (Parity, Resume, Switchover)
+**Goal**: Users have live-environment proof for parity, interruption resume, and safe default-backend switchover workflows
+**Depends on**: Phase 6
+**Requirements**: TOOL-03, RUNT-03, SAFE-02, SAFE-03
+**Gap Closure**: Closes remaining major flow gaps requiring live operational evidence
+**Success Criteria** (what must be TRUE):
+  1. User sees a captured live provider-to-provider discuss/plan parity run with pass/fail evidence
+  2. User can interrupt and resume a real Copilot-backed CLI planning session with verified continuity
+  3. User sees a documented live switchover plus rollback workflow execute successfully
+  4. User sees verification artifacts updated to clear human-needed flow checks from milestone audit
+**Plans**: 0 plans
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -94,3 +133,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Request Accounting + Model Routing | 3/3 | Complete    | 2026-03-25 |
 | 3. Planning Workflow Migration | 4/4 | Complete | 2026-03-25 |
 | 4. Parity Validation + Safe Switchover | 2/2 | Complete   | 2026-03-25 |
+| 5. Planning Parity Evidence + Requirement Revalidation | 0/0 | Planned | - |
+| 6. Stage-Aware Accounting Contract Integration | 0/0 | Planned | - |
+| 7. Live Operational Validation (Parity, Resume, Switchover) | 0/0 | Planned | - |
