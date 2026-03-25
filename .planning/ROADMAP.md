@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Adapter Layer + SDK Foundation** - Build session backend abstraction, tool bridge, and event normalization with hybrid runtime support
 - [x] **Phase 2: Request Accounting + Model Routing** - Add multiplier-aware model routing, premium-request telemetry, and budget guardrails (completed 2026-03-25)
 - [x] **Phase 3: Planning Workflow Migration** - Migrate discuss and plan commands to Copilot SDK with streaming parity (completed 2026-03-25)
-- [ ] **Phase 4: Parity Validation + Safe Switchover** - Prove command equivalence, session resilience, and enable safe default backend switch
+- [x] **Phase 4: Parity Validation + Safe Switchover** - Prove command equivalence, session resilience, and enable safe default backend switch (completed 2026-03-25)
 
 ## Phase Details
 
@@ -77,11 +77,11 @@ Plans:
   1. User sees automated parity test results confirming planning command outputs match between Pi SDK and Copilot SDK backends
   2. User can recover a planning session after a process interruption and continue from where it stopped
   3. User sees key planning command outcomes (discuss, plan, plan-check) produce functionally equivalent artifacts on both backends
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 04-01-PLAN.md — E2E parity validation tests and session resume/interruption recovery tests
-- [ ] 04-02-PLAN.md — Config-driven default backend selection and switchover safety tests
+- [x] 04-02-PLAN.md — Config-driven default backend selection and switchover safety tests
 
 ## Progress
 
@@ -93,4 +93,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Adapter Layer + SDK Foundation | 4/4 | Complete | 2026-03-24 |
 | 2. Request Accounting + Model Routing | 3/3 | Complete    | 2026-03-25 |
 | 3. Planning Workflow Migration | 4/4 | Complete | 2026-03-25 |
-| 4. Parity Validation + Safe Switchover | 1/2 | In Progress|  |
+| 4. Parity Validation + Safe Switchover | 2/2 | Complete   | 2026-03-25 |
