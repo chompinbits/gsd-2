@@ -58,6 +58,13 @@ interface CliFlags {
 
   /** Set by `gsd sessions` when the user picks a specific session to resume */
   _selectedSessionPath?: string
+
+  /**
+   * Planning backend runtime selection.
+   * Parsed from --backend <pi|copilot> or GSD_PLANNING_BACKEND env var.
+   * Default: 'pi' (D-09: keep Pi as default until Phase 4 switchover).
+   */
+  backend?: 'pi' | 'copilot'
 }
 
 function exitIfManagedResourcesAreNewer(currentAgentDir: string): void {
@@ -102,6 +109,9 @@ function parseCliArgs(argv: string[]): CliFlags {
     } else if (arg === '--version' || arg === '-v') {
       process.stdout.write((process.env.GSD_VERSION || '0.0.0') + '\n')
       process.exit(0)
+    } else if (arg === '--backend' && i + 1 < args.length) {
+      const b = args[++i]
+      if (b === 'pi' || b === 'copilot') flags.backend = b
     } else if (arg === '--worktree' || arg === '-w') {
       // -w with no value → auto-generate name; -w <name> → use that name
       if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
@@ -257,6 +267,25 @@ if (cliFlags.messages[0] === 'sessions') {
 if (cliFlags.messages[0] === 'headless') {
   const { runHeadless, parseHeadlessArgs } = await import('./headless.js')
   await runHeadless(parseHeadlessArgs(process.argv))
+  process.exit(0)
+}
+
+// `gsd discuss-phase [topic]` — run discuss-phase workflow with explicit backend selection (D-09)
+// Backend: --backend <pi|copilot> flag, then GSD_PLANNING_BACKEND env var, then 'pi' default.
+if (cliFlags.messages[0] === 'discuss-phase') {
+  const { runDiscussWorkflow } = await import('./workflows/discuss-phase.js')
+  const rawBackend = cliFlags.backend || process.env.GSD_PLANNING_BACKEND || 'pi'
+  const backend = (rawBackend === 'copilot' ? 'copilot' : 'pi') as 'pi' | 'copilot'
+  // D-10: log backend selection at command start
+  process.stderr.write(`[discuss] backend=${backend}\n`)
+  const topic = cliFlags.messages.slice(1).join(' ') || 'phase planning'
+  const result = await runDiscussWorkflow(
+    { topic, cwd: process.cwd() },
+    { backend },
+  )
+  // D-10: log backend selection in final output for parity tracing
+  process.stderr.write(`[discuss] complete: ${result.questions.length} questions, backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
   process.exit(0)
 }
 
