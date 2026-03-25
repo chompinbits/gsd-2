@@ -77,7 +77,11 @@ Plans:
   1. User sees automated parity test results confirming planning command outputs match between Pi SDK and Copilot SDK backends
   2. User can recover a planning session after a process interruption and continue from where it stopped
   3. User sees key planning command outcomes (discuss, plan, plan-check) produce functionally equivalent artifacts on both backends
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — E2E parity validation tests and session resume/interruption recovery tests
+- [ ] 04-02-PLAN.md — Config-driven default backend selection and switchover safety tests
 
 ## Progress
 
