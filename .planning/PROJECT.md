@@ -17,6 +17,7 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 - ✓ Planning and state artifacts drive autonomous execution and progress tracking — existing
 - ✓ Tooling already supports cost and token visibility across workflows — existing
 - ✓ Phase 01 validated Copilot adapter foundations: create, resume, destroy, and tool bridging now work on the Copilot backend while preserving the Pi default path
+- ✓ Phase 02 validated request accounting and model routing: multiplier tiers, per-stage usage tracking, budget guardrails, and telemetry/session persistence on the Copilot path
 
 ### Active
 
@@ -49,7 +50,7 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Use hybrid transition instead of big-bang rewrite | Preserves stability and allows side-by-side validation | — Pending |
-| Optimize both request count and request yield | Pricing pressure and quota efficiency both matter | — Pending |
+| Optimize both request count and request yield | Pricing pressure and quota efficiency both matter | Phase 02 introduced multiplier-aware accounting, budget enforcement, and telemetry visibility |
 | Prioritize phase planning workflows for first optimization wave | High leverage area with repeated orchestration overhead | — Pending |
 | Enforce behavioral parity before aggressive redesign | Reduces user-facing risk during runtime migration | — Pending |
 | Additive Copilot session handle plus explicit resume routing before full session swap | Delivers validated backend parity without breaking the existing AgentSession path | Phase 01 complete |
@@ -57,7 +58,8 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 ## Current State
 
 - Phase 01 complete: adapter layer, tool bridge, event translation, create-session routing, and explicit Copilot session resume path are verified.
-- Next focus: Phase 02 request accounting and model routing.
+- Phase 02 complete: request accounting and model routing are verified, including per-stage premium usage tracking and budget guardrails in the Copilot backend path.
+- Next focus: Phase 03 planning workflow migration.
 
 ## Evolution
 
@@ -77,4 +79,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-24 after Phase 01 completion*
+*Last updated: 2026-03-25 after Phase 02 completion*
