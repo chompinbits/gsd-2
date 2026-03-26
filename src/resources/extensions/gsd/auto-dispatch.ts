@@ -53,6 +53,7 @@ export type DispatchAction =
       unitType: string;
       unitId: string;
       prompt: string;
+      stage?: string;           // Phase 9 / EXEC-02 — accounting stage, resolved after dispatch
       pauseAfterDispatch?: boolean;
       /** Name of the matched dispatch rule from the unified registry (journal provenance). */
       matchedRule?: string;
@@ -612,6 +613,58 @@ export const DISPATCH_RULES: DispatchRule[] = [
 
 import { getRegistry } from "./rule-registry.js";
 
+// ─── Stage Derivation Map ─────────────────────────────────────────────────
+// Maps auto-mode unit types to stage-router keys in STAGE_TIER_MAP.
+// Normalizes unit type names to existing accounting stages so STAGE_TIER_MAP
+// does not need expanding with aliases. (Phase 9 / EXEC-02, D-03)
+
+export const UNIT_TYPE_TO_STAGE: Record<string, string> = {
+  "discuss-milestone": "discuss-phase",
+  "research-milestone": "research-phase",
+  "research-slice": "research-phase",
+  "plan-milestone": "plan-phase",
+  "plan-slice": "plan-phase",
+  "execute-task": "execute-task",
+  "complete-slice": "execute-task",
+  "run-uat": "run-uat",
+  "verify-phase": "verify-phase",
+  "rewrite-docs": "execute-task",
+  "reassess-roadmap": "plan-phase",
+  "replan-slice": "plan-phase",
+  "validate-milestone": "validate-phase",
+};
+
+// ─── Tool Profile Map ─────────────────────────────────────────────────────
+// Maps auto-mode unit types to built-in tool profile names.
+// "coding"   = read + write + edit + bash + lsp (per Phase 8 D-07)
+// "readonly" = read + bash + lsp (per Phase 8 D-08, no write/edit)
+// Extension-registered tools (MCP, skills) are NOT filtered — they
+// pass through regardless of profile. Only built-in tools are restricted.
+
+export type ToolProfile = "coding" | "readonly";
+
+export const UNIT_TYPE_TOOL_PROFILE: Record<string, ToolProfile> = {
+  "discuss-milestone": "readonly",
+  "research-milestone": "readonly",
+  "research-slice": "readonly",
+  "plan-milestone": "readonly",
+  "plan-slice": "readonly",
+  "execute-task": "coding",
+  "complete-slice": "coding",
+  "run-uat": "readonly",
+  "verify-phase": "readonly",
+  "rewrite-docs": "coding",
+  "reassess-roadmap": "readonly",
+  "replan-slice": "readonly",
+  "validate-milestone": "readonly",
+};
+
+/** Resolve a tool profile name to built-in tool name list. */
+export function resolveToolProfile(profile: ToolProfile): string[] {
+  if (profile === "coding") return ["read", "bash", "edit", "write", "lsp"];
+  return ["read", "bash", "lsp"]; // readonly
+}
+
 // ─── Resolver ─────────────────────────────────────────────────────────────
 
 /**
@@ -628,7 +681,11 @@ export async function resolveDispatch(
   // Delegate to registry when available
   try {
     const registry = getRegistry();
-    return await registry.evaluateDispatch(ctx);
+    const result = await registry.evaluateDispatch(ctx);
+    if (result.action === "dispatch" && !result.stage) {
+      result.stage = UNIT_TYPE_TO_STAGE[result.unitType] ?? result.unitType;
+    }
+    return result;
   } catch {
     // Registry not initialized — fall back to inline loop
   }
@@ -637,6 +694,9 @@ export async function resolveDispatch(
     const result = await rule.match(ctx);
     if (result) {
       if (result.action !== "skip") result.matchedRule = rule.name;
+      if (result.action === "dispatch" && !result.stage) {
+        result.stage = UNIT_TYPE_TO_STAGE[result.unitType] ?? result.unitType;
+      }
       return result;
     }
   }

@@ -100,6 +100,22 @@ export interface IterationData {
   previousTier: string | undefined;
   /** Model override from pre-dispatch hooks (applied after standard model selection). */
   hookModelOverride?: string;
+  /** Stage name for accounting, resolved from unit type via UNIT_TYPE_TO_STAGE. */
+  stage?: string;
 }
 
 export type WindowEntry = { key: string; error?: string };
+
+/**
+ * Per-unit session configuration threaded from dispatch through runUnit
+ * to the session creation chain. Enables stage-aware accounting and
+ * per-unit tool restriction on the Copilot backend. (Phase 9 / EXEC-02)
+ */
+export interface UnitSessionConfig {
+  /** Workflow stage for accounting tier routing (e.g., "execute-task", "discuss-phase"). */
+  stage?: string;
+  /** Restrict active tools for this unit session. Applied after _buildRuntime(). */
+  availableToolNames?: string[];
+  /** Model hint for tier escalation (optional, used by budget downgrade in future phases). */
+  modelHint?: string;
+}
