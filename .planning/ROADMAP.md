@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend (completed 2026-03-26)
 - [ ] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config
 - [x] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend (completed 2026-03-26)
-- [ ] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure
+- [x] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure (completed 2026-03-26)
 - [ ] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted
 
 ## Phase Details
@@ -91,7 +91,7 @@ Plans:
 
 Plans:
 - [x] 11-01-PLAN.md — Core downgrade logic, config extension, and unit tests
-- [ ] 11-02-PLAN.md — Wire downgrade into session creation and telemetry
+- [x] 11-02-PLAN.md — Wire downgrade into session creation and telemetry
 
 ### Phase 12: BYOK Fallback
 **Goal**: Users can configure and use a BYOK provider as fallback when premium quota is exhausted
@@ -114,5 +114,5 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | 8. Execute & Verify Backend Routing | 3/3 | Complete   | 2026-03-26 |
 | 9. Autonomous Orchestration Migration | 1/2 | In Progress|  |
 | 10. Command Coverage Completion | 2/2 | Complete    | 2026-03-26 |
-| 11. Free-Tier Model Fallback | 1/2 | In Progress|  |
+| 11. Free-Tier Model Fallback | 2/2 | Complete   | 2026-03-26 |
 | 12. BYOK Fallback | 0/? | Not started | - |
