@@ -1,5 +1,11 @@
 import type { AgentEvent, AgentTool } from "@gsd/pi-agent-core";
 
+export interface ByokProviderConfig {
+	type: "openai" | "anthropic" | "azure";
+	baseUrl: string;
+	apiKey: string;
+}
+
 export interface BackendConfig {
 	model?: string;
 	tools: AgentTool[];
@@ -9,6 +15,7 @@ export interface BackendConfig {
 	sessionId?: string;
 	streaming?: boolean;
 	stage?: string;
+	provider?: ByokProviderConfig;
 }
 
 export interface SendOptions {

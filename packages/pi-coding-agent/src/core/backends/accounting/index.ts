@@ -35,6 +35,8 @@ export {
 export type { DowngradeSuggestion } from "./downgrade.js";
 export { suggestDowngrade, FREE_TIER_CANDIDATES } from "./downgrade.js";
 
+export { isQuotaExhausted, resolveByokProvider } from "./byok.js";
+
 export {
   formatStageLine,
   formatPremiumSummary,

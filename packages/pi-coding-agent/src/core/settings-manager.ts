@@ -92,6 +92,14 @@ export interface ModelDiscoverySettings {
 	autoRefreshOnModelSelect?: boolean; // default: false - refresh discovery when opening model selector
 }
 
+export interface ByokConfig {
+	enabled: boolean;
+	type: "openai" | "anthropic" | "azure";
+	baseUrl: string;
+	apiKey: string;
+	model: string;
+}
+
 export type TransportSetting = Transport;
 
 /**
@@ -152,6 +160,7 @@ export interface Settings {
 	modelDiscovery?: ModelDiscoverySettings;
 	editMode?: "standard" | "hashline"; // Edit tool mode: "standard" (text match) or "hashline" (LINE#ID anchors). Default: "standard"
 	defaultBackend?: "pi" | "copilot"; // Session backend runtime. Default: "pi". Set to "copilot" to enable GitHub Copilot SDK.
+	byok?: ByokConfig; // Bring Your Own Key fallback provider config for when premium quota is exhausted.
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -718,6 +727,14 @@ export class SettingsManager {
 
 	setDefaultBackend(backend: "pi" | "copilot"): void {
 		this.setGlobalSetting("defaultBackend", backend);
+	}
+
+	getByokConfig(): ByokConfig | undefined {
+		return this.settings.byok;
+	}
+
+	setByokConfig(config: ByokConfig): void {
+		this.setGlobalSetting("byok", config);
 	}
 
 	getTransport(): TransportSetting {
