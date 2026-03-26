@@ -26,11 +26,11 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 
 ### Active
 
-- [ ] Port core agent orchestration from Pi SDK runtime integration to GitHub Copilot SDK session/client primitives
-- [ ] Preserve existing command UX and workflow behavior during migration (hybrid transition path)
-- [ ] Optimize prompt/request strategy for GitHub premium request accounting (reduce total requests and increase per-request yield)
-- [ ] Prioritize premium-request optimization in phase planning workflows first, then expand to execution and verification loops
-- [ ] Add measurable request-efficiency telemetry per workflow stage (prompt count, completion yield, avoidable retries)
+- [ ] User can run execute and verify workflows entirely on Copilot SDK backend (EXEC-01)
+- [ ] User can run full autonomous orchestration with Copilot SDK as default backend (EXEC-02)
+- [ ] User can run roadmap and requirements management commands fully through Copilot SDK backend (FLOW-01)
+- [ ] User receives free-tier fallback to 0x models automatically under quota pressure (FLOW-02)
+- [ ] User can use BYOK fallback when premium quota is exhausted (FLOW-03)
 
 ### Out of Scope
 
@@ -66,11 +66,16 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 - Phase 01 through Phase 07 are complete, including live parity/switchover/resume validation evidence.
 - Runtime foundation, planning parity, accounting telemetry propagation, and live operational safety checks now have milestone-level artifacts in `.planning/milestones/`.
 
-## Next Milestone Goals
+## Current Milestone: v1.1 Next Steps
 
-- Define v1.1 scope and requirements via `/gsd-new-milestone`.
-- Prioritize deferred v2 requirement themes for next planning cycle: execute/verify migration (`EXEC-01`, `EXEC-02`) and coverage expansion (`FLOW-01` to `FLOW-03`).
-- Re-run a fresh milestone audit at v1.1 closeout to keep milestone status and gap reporting current.
+**Goal:** Complete the Copilot SDK migration by porting execute/verify workflows, full autonomous orchestration, and remaining command coverage — fulfilling everything deferred from v1.0.
+
+**Target features:**
+- Execute and verify workflows on Copilot SDK backend (EXEC-01)
+- Full autonomous orchestration with Copilot SDK as default (EXEC-02)
+- Roadmap/requirements management commands through Copilot SDK (FLOW-01)
+- Free-tier 0× model fallback under quota pressure (FLOW-02)
+- BYOK fallback when premium quota is exhausted (FLOW-03)
 
 ## Evolution
 
@@ -90,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 after v1.0 milestone completion*
+*Last updated: 2026-03-25 — Milestone v1.1 started*
