@@ -41,7 +41,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User can run verify-work with Copilot SDK backend and receive UAT verification results
   3. Backend routing config (defaultBackend: "copilot") controls execute/verify workflow paths without code changes
   4. Accounting telemetry captures per-plan premium request usage during execute/verify sessions
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Stage aliases + execute/verify workflow wrappers
+- [ ] 08-02-PLAN.md — Automated test coverage for routing, tiers, and tool profiles
 
 ### Phase 9: Autonomous Orchestration Migration
 **Goal**: Users can run full autonomous orchestration end-to-end with Copilot SDK as default backend
