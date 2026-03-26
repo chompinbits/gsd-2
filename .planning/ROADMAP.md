@@ -57,7 +57,11 @@ Plans:
   2. Auto-mode dispatch passes stage-aware config through runUnit → session creation chain
   3. Per-unit tool restriction works correctly when auto-mode creates fresh sessions via newSession()
   4. Session lifecycle (create, resume, destroy) functions correctly across multi-phase autonomous runs
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — UnitSessionConfig types, stage/tool maps, dispatch-to-session wiring
+- [ ] 09-02-PLAN.md — Automated tests for tool profiles, stage routing, and config threading
 
 ### Phase 10: Command Coverage Completion
 **Goal**: Users can run roadmap and requirements management commands fully through Copilot SDK backend
@@ -100,7 +104,7 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 8. Execute & Verify Backend Routing | 3/3 | Complete   | 2026-03-26 |
-| 9. Autonomous Orchestration Migration | 0/? | Not started | - |
+| 9. Autonomous Orchestration Migration | 0/2 | Planning | - |
 | 10. Command Coverage Completion | 0/? | Not started | - |
 | 11. Free-Tier Model Fallback | 0/? | Not started | - |
 | 12. BYOK Fallback | 0/? | Not started | - |
