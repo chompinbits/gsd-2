@@ -25,10 +25,10 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 - ✓ Phase 07 validated live operations: Copilot-backed parity, switchover rollback, and session resume flow evidence captured in live runs
 - ✓ Phase 08 validated execute/verify workflow CLI dispatch and settings-driven backend routing (EXEC-01)
 - ✓ Phase 09 validated autonomous orchestration stage/tool config threading and Copilot-backed unit session setup (EXEC-02)
+- ✓ Phase 10 validated roadmap/requirements management command routing through Copilot backend with full dispatch and test coverage (FLOW-01)
 
 ### Active
 
-- [ ] User can run roadmap and requirements management commands fully through Copilot SDK backend (FLOW-01)
 - [ ] User receives free-tier fallback to 0x models automatically under quota pressure (FLOW-02)
 - [ ] User can use BYOK fallback when premium quota is exhausted (FLOW-03)
 
@@ -67,6 +67,7 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 - Runtime foundation, planning parity, accounting telemetry propagation, and live operational safety checks now have milestone-level artifacts in `.planning/milestones/`.
 - Phase 08 is complete: execute-phase/verify-work CLI dispatch now routes through settings-driven backend selection for Copilot parity.
 - Phase 09 is complete: autonomous orchestration now threads per-unit stage and tool-profile config through dispatch, runUnit, and newSession for Copilot-backed sessions.
+- Phase 10 is complete: roadmap/requirements management commands now route through Copilot backend with stage-tier mappings and passing dispatch/workflow coverage tests.
 
 ## Current Milestone: v1.1 Next Steps
 
@@ -97,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-26 — Phase 09 complete (EXEC-02 validated)*
+*Last updated: 2026-03-26 — Phase 10 complete (FLOW-01 validated)*
