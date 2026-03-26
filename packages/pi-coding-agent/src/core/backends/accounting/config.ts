@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { AccountingConfig } from "./types.js";
-import { DEFAULT_ACCOUNTING_CONFIG } from "./types.js";
+import { DEFAULT_ACCOUNTING_CONFIG, DEFAULT_FREE_TIER_FALLBACK } from "./types.js";
 
 /**
  * Loads AccountingConfig from an optional config.json file.
@@ -46,7 +46,17 @@ export function loadAccountingConfig(configPath?: string): AccountingConfig {
       ? s.hard_stop
       : DEFAULT_ACCOUNTING_CONFIG.hardStop;
 
-  return { budgetLimit, warnThreshold, hardStop };
+  const ftfSection = (s as Record<string, unknown>).free_tier_fallback;
+  let freeTierFallback = { ...DEFAULT_FREE_TIER_FALLBACK };
+  if (ftfSection && typeof ftfSection === "object") {
+    const f = ftfSection as Record<string, unknown>;
+    if (typeof f.enabled === "boolean") freeTierFallback.enabled = f.enabled;
+    if (f.threshold_policy === "warn" || f.threshold_policy === "hard_stop") {
+      freeTierFallback.thresholdPolicy = f.threshold_policy;
+    }
+  }
+
+  return { budgetLimit, warnThreshold, hardStop, freeTierFallback };
 }
 
 /**
@@ -62,6 +72,7 @@ export function mergeWithCliOverrides(
   if (overrides.budgetLimit !== undefined) result.budgetLimit = overrides.budgetLimit;
   if (overrides.warnThreshold !== undefined) result.warnThreshold = overrides.warnThreshold;
   if (overrides.hardStop !== undefined) result.hardStop = overrides.hardStop;
+  if (overrides.freeTierFallback !== undefined) result.freeTierFallback = overrides.freeTierFallback;
   return result;
 }
 
