@@ -26,7 +26,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: Live Operations Validation** - Copilot-backed parity, switchover rollback, session resume evidence *(v1.0)*
 - [x] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend (completed 2026-03-26)
 - [ ] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config
-- [ ] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend
+- [x] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend (completed 2026-03-26)
 - [ ] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure
 - [ ] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted
 
@@ -71,11 +71,11 @@ Plans:
   1. User can run roadmap commands (new-project, new-milestone, add-phase, remove-phase) on Copilot backend
   2. User can run requirements commands (plan-phase requirements parsing, progress status) on Copilot backend
   3. All management commands respect defaultBackend config setting without per-command overrides
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 10-01-PLAN.md — Stage router entries, workflow wrappers, CLI dispatch blocks
-- [ ] 10-02-PLAN.md — Automated tests for routing, stage-tier, and dispatch coverage
+- [x] 10-02-PLAN.md — Automated tests for routing, stage-tier, and dispatch coverage
 
 ### Phase 11: Free-Tier Model Fallback
 **Goal**: Users receive configurable free-tier model fallback under quota pressure
@@ -109,6 +109,6 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 |-------|----------------|--------|-----------|
 | 8. Execute & Verify Backend Routing | 3/3 | Complete   | 2026-03-26 |
 | 9. Autonomous Orchestration Migration | 1/2 | In Progress|  |
-| 10. Command Coverage Completion | 1/2 | In Progress|  |
+| 10. Command Coverage Completion | 2/2 | Complete   | 2026-03-26 |
 | 11. Free-Tier Model Fallback | 0/? | Not started | - |
 | 12. BYOK Fallback | 0/? | Not started | - |
