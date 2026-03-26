@@ -275,7 +275,7 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 		// Lazy imports keep the default Pi runtime path free of Copilot SDK loading cost.
 		const { CopilotClientManager } = await import("./backends/copilot-client-manager.js");
 		const { CopilotSessionBackend } = await import("./backends/copilot-backend.js");
-		const { loadAccountingConfig } = await import("./backends/accounting/index.js");
+		const { loadAccountingConfig, formatPremiumSummary } = await import("./backends/accounting/index.js");
 
 		const clientManager = retainSharedCopilotClientManager(() => new CopilotClientManager());
 		const copilotBackend = new CopilotSessionBackend(clientManager);
@@ -295,9 +295,16 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 			const rawCopilotSessionHandle = hasExistingSession
 				? await copilotBackend.resumeSession(sessionManager.getSessionId(), sessionConfig)
 				: await copilotBackend.createSession(sessionConfig);
-			copilotSessionHandle = withCopilotSessionCleanup(rawCopilotSessionHandle, () =>
-				releaseSharedCopilotClientManager(clientManager),
-			);
+			copilotSessionHandle = withCopilotSessionCleanup(rawCopilotSessionHandle, async () => {
+				const tracker = copilotBackend.getTracker();
+				if (tracker && tracker.getSummary().totalRequests > 0) {
+					const downgrades = copilotBackend.getDowngrades();
+					const byokActive = copilotBackend.getByokActivations().length > 0;
+					const summary = formatPremiumSummary(tracker.getSummary(), accountingConfig, downgrades, byokActive);
+					process.stderr.write("[gsd:accounting] " + summary + "\n");
+				}
+				await releaseSharedCopilotClientManager(clientManager);
+			});
 		} catch (error) {
 			await releaseSharedCopilotClientManager(clientManager);
 			throw error;
