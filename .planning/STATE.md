@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Next Steps
-status: Defining requirements
+status: Ready to plan
 stopped_at: —
 last_updated: "2026-03-25T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,14 +19,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Deliver the same reliable GSD workflow outcomes while using fewer, higher-value premium requests per completed unit of work.
-**Current focus:** Milestone closeout complete; awaiting next milestone definition
+**Current focus:** Phase 8 — Execute & Verify Backend Routing
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 8 of 12 (Execute & Verify Backend Routing)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-03-25 — Milestone v1.1 started
+Status: Ready to plan
+Last activity: 2026-03-25 — Roadmap created for v1.1 (Phases 8-12)
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -48,20 +50,6 @@ Last activity: 2026-03-25 — Milestone v1.1 started
 - Trend: —
 
 *Updated after each plan completion*
-| Phase 01 P01 | 2 min | 3 tasks | 4 files |
-| Phase 01 P02 | 1 min | 2 tasks | 4 files |
-| Phase 01 P03 | 1 min | 3 tasks | 4 files |
-| Phase 01 P04 | 1 min | 2 tasks | 2 files |
-| Phase 02 P01 | 5 | 2 tasks | 4 files |
-| Phase 02 P02 | 7 | 2 tasks | 6 files |
-| Phase 02 P03 | 262 | 2 tasks | 4 files |
-| Phase 03 P01 | 13 | 2 tasks | 2 files |
-| Phase 03 P02 | 9 | 2 tasks | 2 files |
-| Phase 03 P03 | 7 | 4 tasks | 3 files |
-| Phase 04 P01 | 12 | 2 tasks | 2 files |
-| Phase 04 P02 | 5 | 2 tasks | 3 files |
-| Phase 07 P01 | 16 min | 2 tasks | 2 files |
-| Phase 07 P02 | 14 min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -70,25 +58,11 @@ Last activity: 2026-03-25 — Milestone v1.1 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Roadmap]: Derive 4 phases from 14 v1 requirements — adapter → accounting → planning migration → parity validation
-- [Roadmap]: Execution and auto-mode workflows deferred to v2 per REQUIREMENTS.md scoping
-- [Roadmap]: Planning workflow migration prioritized as first user-facing validation (0× models = zero premium cost)
-- [Phase 02]: GPT models are free (0x), Claude Haiku/Gemini Flash are low (0.33x), Claude Sonnet/Pro are standard (1x) for GitHub Copilot premium request accounting
-- [Phase 02]: Medium complexity hint caps tier at low using min(stageTier, low) — hints can only lower tiers, never raise
-- [Phase 02]: budgetLimit=0 means unlimited/disabled — guard always returns ok
-- [Phase 02]: ts-resolver.mjs ESM hook required because node --experimental-strip-types does not auto-remap .js imports to .ts in Node.js v24
-- [Phase 02]: AccountingSessionHandle wraps CopilotSessionHandle as transparent proxy — no-op when accounting config not set
-- [Phase 02]: Stage defaults to 'unknown' in send() — BackendSessionHandle has no stage metadata, maps to standard tier
-- [Phase 03]: discuss-phase workflow file created from scratch: plan referenced existing file but src/workflows/discuss-phase.ts did not exist
-- [Phase 03]: session.prompt() used instead of plan's idealized session.send() — actual pi-coding-agent API
-- [Phase 03]: D-09 safe default preserved: plan-phase backend defaults to 'pi'; no switchover in Phase 3
-- [Phase 03]: Accounting tier: plan-phase → standard (1x) tier; inlined as constant to avoid cross-package internal import from @gsd/pi-coding-agent
-- [Phase 03]: Parity is guaranteed by design (D-01, D-03): both backends feed into identical parsing functions; tests confirm via mock representative responses
-- [Phase 03]: Test files placed in src/tests/parity/ to match project conventions (not src/test/ as plan specified)
-- [Phase 04]: E2E tests extend Phase 3 structural tests with full roundtrip path: mock response → parse → validate → cross-backend compare
-- [Phase 04]: Session resume tests run via compiled dist/ output (not --experimental-strip-types) due to TS parameter properties in copilot-backend.ts
-- [Phase 04]: ts-resolver.mjs ESM hook required to run switchover.test.ts (same as Phase 2)
-- [Phase 04]: SettingsManager.inMemory() used for behavioral switchover tests — no file I/O, isolated
+- [Roadmap]: Derive 5 phases from 5 v1.1 requirements — execute/verify → autonomous → commands → free-tier fallback → BYOK fallback
+- [Roadmap]: Phase 8 (EXEC-01) is foundation for all other v1.1 phases — per-session backend routing must land first
+- [Roadmap]: Phase 9 (EXEC-02) is highest complexity — auto-mode session lifecycle with extension rebuild timing
+- [Roadmap]: Phases 10-12 build independently on Phase 8; Phase 12 also depends on Phase 11 (BYOK extends free-tier fallback)
+- [Roadmap]: No new npm dependencies needed — all v1.1 features use @github/copilot-sdk 0.2.0 capabilities from v1.0
 
 ### Pending Todos
 
@@ -96,11 +70,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- SDK is technical preview — adapter isolation (Phase 1) is mandatory before any integration
-- Tool call round-trip premium request counting needs empirical measurement in Phase 2
+- Auto-mode newSession() rebuilds full tool set — per-unit tool restriction must thread through without breaking extension rebuild logic (EXEC-02)
+- SDK provider config runtime behavior for BYOK auth failure mid-session needs runtime testing (FLOW-03)
+- Budget threshold tuning for suggestDowngrade() needs user testing to calibrate UX (FLOW-02)
 
 ## Session Continuity
 
-Last session: 2026-03-25T20:45:12.418Z
-Stopped at: Completed 07-02-PLAN.md
+Last session: 2026-03-25
+Stopped at: Roadmap created for v1.1
 Resume file: None
