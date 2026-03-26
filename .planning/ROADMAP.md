@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config
 - [x] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend (completed 2026-03-26)
 - [x] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure (completed 2026-03-26)
-- [ ] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted
+- [x] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted (completed 2026-03-26)
 
 ## Phase Details
 
@@ -102,11 +102,11 @@ Plans:
   2. When premium quota is fully exhausted, system falls back to configured BYOK provider automatically
   3. BYOK sessions route through the same BackendSessionHandle interface with no workflow changes needed
   4. User sees clear indication when running on BYOK provider vs Copilot premium
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 12-01-PLAN.md — BYOK types, settings config, exhaustion logic + unit tests
-- [ ] 12-02-PLAN.md — Wire BYOK into session creation and telemetry
+- [x] 12-01-PLAN.md — BYOK types, settings config, exhaustion logic + unit tests
+- [x] 12-02-PLAN.md — Wire BYOK into session creation and telemetry
 
 ## Progress
 
@@ -119,4 +119,4 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | 9. Autonomous Orchestration Migration | 1/2 | In Progress|  |
 | 10. Command Coverage Completion | 2/2 | Complete    | 2026-03-26 |
 | 11. Free-Tier Model Fallback | 2/2 | Complete    | 2026-03-26 |
-| 12. BYOK Fallback | 0/? | Not started | - |
+| 12. BYOK Fallback | 2/2 | Complete   | 2026-03-26 |
