@@ -105,6 +105,15 @@ describe("getStageMultiplierTier", () => {
   it("returns 'free' for run-uat alias", () => {
     assert.equal(getStageMultiplierTier("run-uat"), "free");
   });
+
+  // Phase 10 management command stage mappings (per D-04)
+  it("returns 'low' for roadmap", () => {
+    assert.equal(getStageMultiplierTier("roadmap"), "low");
+  });
+
+  it("returns 'low' for requirements", () => {
+    assert.equal(getStageMultiplierTier("requirements"), "low");
+  });
 });
 
 describe("resolveEffectiveTier", () => {
