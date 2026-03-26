@@ -25,7 +25,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Stage-Aware Accounting** - Accounting contract propagation from workflow stage hints *(v1.0)*
 - [x] **Phase 7: Live Operations Validation** - Copilot-backed parity, switchover rollback, session resume evidence *(v1.0)*
 - [x] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend (completed 2026-03-26)
-- [ ] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config
+- [x] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config (completed 2026-03-26)
 - [x] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend (completed 2026-03-26)
 - [x] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure (completed 2026-03-26)
 - [x] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted (completed 2026-03-26)
@@ -57,7 +57,7 @@ Plans:
   2. Auto-mode dispatch passes stage-aware config through runUnit → session creation chain
   3. Per-unit tool restriction works correctly when auto-mode creates fresh sessions via newSession()
   4. Session lifecycle (create, resume, destroy) functions correctly across multi-phase autonomous runs
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 09-01-PLAN.md — UnitSessionConfig types, stage/tool maps, dispatch-to-session wiring
@@ -116,7 +116,7 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 8. Execute & Verify Backend Routing | 3/3 | Complete   | 2026-03-26 |
-| 9. Autonomous Orchestration Migration | 1/2 | In Progress|  |
+| 9. Autonomous Orchestration Migration | 2/2 | Complete    | 2026-03-26 |
 | 10. Command Coverage Completion | 2/2 | Complete    | 2026-03-26 |
 | 11. Free-Tier Model Fallback | 2/2 | Complete    | 2026-03-26 |
 | 12. BYOK Fallback | 2/2 | Complete   | 2026-03-26 |
