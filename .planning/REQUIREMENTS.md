@@ -15,7 +15,7 @@ Requirements for this milestone only. Each maps to exactly one roadmap phase.
 
 ### Command Coverage
 
-- [ ] **FLOW-01**: User can run roadmap and requirements management commands fully through Copilot SDK backend.
+- [x] **FLOW-01**: User can run roadmap and requirements management commands fully through Copilot SDK backend.
 
 ### Cost Safety and Fallbacks
 
@@ -45,7 +45,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | EXEC-01 | Phase 8 | Complete |
 | EXEC-02 | Phase 9 | Complete |
-| FLOW-01 | Phase 10 | Pending |
+| FLOW-01 | Phase 10 | Complete |
 | FLOW-02 | Phase 11 | Pending |
 | FLOW-03 | Phase 12 | Pending |
 
