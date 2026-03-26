@@ -151,6 +151,11 @@ Plans:
   2. Phases 08, 09, 11, 12 VALIDATION.md files are updated to reflect actual post-execution Nyquist status
   3. Any phase with all waves verified has `nyquist_compliant: true`
   4. No phase is left with a draft-state VALIDATION.md that contradicts its verification results
+**Plans:** 2 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Create Phase 10 VALIDATION.md + update Phases 08/09 to post-execution status
+- [ ] 15-02-PLAN.md — Update Phases 11/12 VALIDATION.md to post-execution status
 
 ## Progress
 
