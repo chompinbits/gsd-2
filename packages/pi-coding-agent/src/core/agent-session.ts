@@ -1502,6 +1502,8 @@ export class AgentSession {
 	async newSession(options?: {
 		parentSession?: string;
 		setup?: (sessionManager: SessionManager) => Promise<void>;
+		/** Per-unit tool restriction. Applied AFTER _buildRuntime() to prevent extension rebuild override. (Phase 9 / EXEC-02) */
+		activeToolNames?: string[];
 	}): Promise<boolean> {
 		const previousSessionFile = this.sessionFile;
 
@@ -1549,6 +1551,13 @@ export class AgentSession {
 			// Sync agent state with session manager after setup
 			const sessionContext = this.sessionManager.buildSessionContext();
 			this.agent.replaceMessages(sessionContext.messages);
+		}
+
+		// Per-unit tool restriction (Phase 9 / EXEC-02).
+		// Applied AFTER _buildRuntime() to prevent extension rebuild from
+		// overriding the filter (Pitfall 1 from research).
+		if (options?.activeToolNames) {
+			this.setActiveToolsByName(options.activeToolNames);
 		}
 
 		this._reconnectToAgent();

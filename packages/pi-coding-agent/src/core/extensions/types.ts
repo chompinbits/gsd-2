@@ -301,6 +301,8 @@ export interface ExtensionCommandContext extends ExtensionContext {
 	newSession(options?: {
 		parentSession?: string;
 		setup?: (sessionManager: SessionManager) => Promise<void>;
+		/** Per-unit tool restriction. Applied AFTER _buildRuntime() to prevent extension rebuild override. (Phase 9 / EXEC-02) */
+		activeToolNames?: string[];
 	}): Promise<{ cancelled: boolean }>;
 
 	/** Fork from a specific entry, creating a new session file. */
@@ -1356,6 +1358,8 @@ export interface ExtensionCommandContextActions {
 	newSession: (options?: {
 		parentSession?: string;
 		setup?: (sessionManager: SessionManager) => Promise<void>;
+		/** Per-unit tool restriction. Applied AFTER _buildRuntime() to prevent extension rebuild override. (Phase 9 / EXEC-02) */
+		activeToolNames?: string[];
 	}) => Promise<{ cancelled: boolean }>;
 	fork: (entryId: string) => Promise<{ cancelled: boolean }>;
 	navigateTree: (

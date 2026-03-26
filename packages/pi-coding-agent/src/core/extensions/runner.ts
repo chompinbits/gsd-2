@@ -138,6 +138,8 @@ export type ExtensionErrorListener = (error: ExtensionError) => void;
 export type NewSessionHandler = (options?: {
 	parentSession?: string;
 	setup?: (sessionManager: SessionManager) => Promise<void>;
+	/** Per-unit tool restriction. Applied AFTER _buildRuntime() to prevent extension rebuild override. (Phase 9 / EXEC-02) */
+	activeToolNames?: string[];
 }) => Promise<{ cancelled: boolean }>;
 
 export type ForkHandler = (entryId: string) => Promise<{ cancelled: boolean }>;
