@@ -9,7 +9,9 @@ import {
 } from "./accounting/index.js";
 import { suggestDowngrade } from "./accounting/downgrade.js";
 import type { DowngradeSuggestion } from "./accounting/downgrade.js";
+import { isQuotaExhausted, resolveByokProvider } from "./accounting/byok.js";
 import type { BackendConfig, BackendSessionHandle, SendOptions, SessionBackend } from "./backend-interface.js";
+import type { SettingsManager } from "../settings-manager.js";
 import { CopilotClientManager } from "./copilot-client-manager.js";
 import type { CopilotSessionEvent } from "./event-translator.js";
 import { isSessionError, isSessionIdle, translateCopilotEvent } from "./event-translator.js";
@@ -115,6 +117,8 @@ export class CopilotSessionBackend implements SessionBackend {
 	private accountingConfig?: AccountingConfig;
 	private _currentTracker?: RequestTracker;
 	private _downgrades: Array<{ originalModel: string; downgradedTo: string; percentUsed: number }> = [];
+	private _settingsManager?: SettingsManager;
+	private _byokActivations: Array<{ type: string; baseUrl: string; percentUsed: number }> = [];
 
 	constructor(clientManager: CopilotClientManager) {
 		this.clientManager = clientManager;
@@ -124,12 +128,57 @@ export class CopilotSessionBackend implements SessionBackend {
 		this.accountingConfig = config;
 	}
 
+	setSettingsManager(settingsManager: SettingsManager): void {
+		this._settingsManager = settingsManager;
+	}
+
 	getTracker(): RequestTracker | undefined {
 		return this._currentTracker;
 	}
 
 	getDowngrades(): Array<{ originalModel: string; downgradedTo: string; percentUsed: number }> {
 		return this._downgrades;
+	}
+
+	getByokActivations(): Array<{ type: string; baseUrl: string; percentUsed: number }> {
+		return this._byokActivations;
+	}
+
+	/**
+	 * Pre-flight BYOK check. If budget is fully exhausted (hard_stop) and BYOK is configured,
+	 * overrides model and injects provider config into BackendConfig.
+	 * Per D-09: reads BYOK config fresh from SettingsManager each call (no caching).
+	 */
+	private _applyByokIfExhausted(config: BackendConfig): {
+		config: BackendConfig;
+		byokActive: boolean;
+	} {
+		if (!this.accountingConfig || !this._currentTracker || !this._settingsManager) {
+			return { config, byokActive: false };
+		}
+		const budgetState = this._currentTracker.getState();
+		if (!isQuotaExhausted(budgetState, this.accountingConfig)) {
+			return { config, byokActive: false };
+		}
+		// D-09: Read BYOK config from settings at session-creation time
+		const byokConfig = this._settingsManager.getByokConfig();
+		const providerConfig = resolveByokProvider(byokConfig);
+		if (!providerConfig) {
+			// D-06: No BYOK configured — let BudgetExceededError propagate naturally
+			return { config, byokActive: false };
+		}
+		// Override model and inject provider (per D-08)
+		const byokAppliedConfig: BackendConfig = {
+			...config,
+			model: byokConfig!.model,
+			provider: providerConfig,
+		};
+		this._byokActivations.push({
+			type: providerConfig.type,
+			baseUrl: providerConfig.baseUrl,
+			percentUsed: budgetState.percentUsed,
+		});
+		return { config: byokAppliedConfig, byokActive: true };
 	}
 
 	/**
@@ -167,11 +216,19 @@ export class CopilotSessionBackend implements SessionBackend {
 	}
 
 	async createSession(config: BackendConfig): Promise<BackendSessionHandle> {
-		const { config: effectiveConfig, downgrade } = this._applyDowngradeIfNeeded(config);
+		const { config: downgradedConfig, downgrade } = this._applyDowngradeIfNeeded(config);
 		if (downgrade) {
 			// D-06: No silent fallback — emit structured notification
 			process.stderr.write(
 				`[gsd:accounting] ⚠ Model downgraded: ${config.model ?? "default"} → ${downgrade.modelId} (${downgrade.reason})\n`,
+			);
+		}
+		// Phase 12: BYOK fallback at hard_stop (after downgrade at warn)
+		const { config: effectiveConfig, byokActive } = this._applyByokIfExhausted(downgradedConfig);
+		if (byokActive) {
+			// D-11: Emit BYOK activation notification
+			process.stderr.write(
+				`[gsd:accounting] ⚡ BYOK provider active: ${effectiveConfig.provider!.type}@${effectiveConfig.provider!.baseUrl} (premium quota exhausted)\n`,
 			);
 		}
 		const client = this.clientManager.getClient();
@@ -186,6 +243,7 @@ export class CopilotSessionBackend implements SessionBackend {
 			configDir: effectiveConfig.configDir,
 			infiniteSessions: { enabled: true },
 			...(effectiveConfig.systemMessage ? { systemMessage: { content: effectiveConfig.systemMessage } } : {}),
+			...(effectiveConfig.provider ? { provider: effectiveConfig.provider } : {}),
 		};
 
 		const session = await client.createSession(sessionConfig);
@@ -203,11 +261,19 @@ export class CopilotSessionBackend implements SessionBackend {
 	}
 
 	async resumeSession(sessionId: string, config: BackendConfig): Promise<BackendSessionHandle> {
-		const { config: effectiveConfig, downgrade } = this._applyDowngradeIfNeeded(config);
+		const { config: downgradedConfig, downgrade } = this._applyDowngradeIfNeeded(config);
 		if (downgrade) {
 			// D-06: No silent fallback — emit structured notification
 			process.stderr.write(
 				`[gsd:accounting] ⚠ Model downgraded: ${config.model ?? "default"} → ${downgrade.modelId} (${downgrade.reason})\n`,
+			);
+		}
+		// Phase 12: BYOK fallback at hard_stop (after downgrade at warn)
+		const { config: effectiveConfig, byokActive } = this._applyByokIfExhausted(downgradedConfig);
+		if (byokActive) {
+			// D-11: Emit BYOK activation notification
+			process.stderr.write(
+				`[gsd:accounting] ⚡ BYOK provider active: ${effectiveConfig.provider!.type}@${effectiveConfig.provider!.baseUrl} (premium quota exhausted)\n`,
 			);
 		}
 		const client = this.clientManager.getClient();
@@ -218,6 +284,7 @@ export class CopilotSessionBackend implements SessionBackend {
 			workingDirectory: effectiveConfig.cwd,
 			configDir: effectiveConfig.configDir,
 			infiniteSessions: { enabled: true },
+			...(effectiveConfig.provider ? { provider: effectiveConfig.provider } : {}),
 		});
 		const rawHandle = new CopilotSessionHandle(session);
 

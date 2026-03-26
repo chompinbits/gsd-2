@@ -22,11 +22,13 @@ export function formatStageLine(
  * Returns a multi-line formatted premium request summary block.
  * Includes per-stage breakdown, totals, budget usage percentage, and a visual bar.
  * Pass `downgrades` to include model downgrade events in the output (D-12).
+ * Pass `byokActive` to indicate BYOK fallback was active during this session.
  */
 export function formatPremiumSummary(
   summary: PremiumRequestSummary,
   config: AccountingConfig,
   downgrades?: Array<{ originalModel: string; downgradedTo: string; percentUsed: number }>,
+  byokActive?: boolean,
 ): string {
   const header = "Premium Request Summary";
   const divider = "═".repeat(header.length);
@@ -70,6 +72,11 @@ export function formatPremiumSummary(
     for (const d of downgrades) {
       lines.push(`  ${d.originalModel} → ${d.downgradedTo} (at ${d.percentUsed.toFixed(1)}% budget)`);
     }
+  }
+
+  if (byokActive) {
+    lines.push("");
+    lines.push("⚡ BYOK fallback was active this session (premium quota exhausted)");
   }
 
   return lines.join("\n");

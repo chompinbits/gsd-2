@@ -12,6 +12,7 @@ import type { ByokConfig } from "../../settings-manager.js";
 import { SettingsManager } from "../../settings-manager.js";
 import type { AccountingConfig, BudgetState } from "./types.js";
 import { DEFAULT_ACCOUNTING_CONFIG } from "./types.js";
+import { formatPremiumSummary } from "./telemetry.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -232,5 +233,80 @@ describe("resolveByokProvider", () => {
       baseUrl: "https://mydeployment.openai.azure.com",
       apiKey: "azure-api-key",
     });
+  });
+});
+
+// ─── 6. CopilotSessionBackend BYOK wiring — source shape ────────────────────
+
+describe("CopilotSessionBackend — BYOK wiring source shape", () => {
+  const backendSrc = readFileSync(
+    "packages/pi-coding-agent/src/core/backends/copilot-backend.ts",
+    "utf-8",
+  );
+
+  it("imports isQuotaExhausted and resolveByokProvider from byok.js", () => {
+    assert.match(backendSrc, /import.*isQuotaExhausted.*resolveByokProvider.*\.\/accounting\/byok\.js/);
+  });
+
+  it("has _applyByokIfExhausted private method", () => {
+    assert.match(backendSrc, /_applyByokIfExhausted/);
+  });
+
+  it("has _byokActivations field", () => {
+    assert.match(backendSrc, /_byokActivations/);
+  });
+
+  it("has getByokActivations method", () => {
+    assert.match(backendSrc, /getByokActivations/);
+  });
+
+  it("has setSettingsManager method", () => {
+    assert.match(backendSrc, /setSettingsManager/);
+  });
+
+  it("createSession calls _applyByokIfExhausted", () => {
+    assert.match(backendSrc, /_applyByokIfExhausted/);
+  });
+
+  it("emits BYOK activation notification string", () => {
+    assert.match(backendSrc, /\[gsd:accounting\].*BYOK provider active:/);
+  });
+
+  it("spreads provider into session config", () => {
+    assert.match(backendSrc, /effectiveConfig\.provider.*provider.*effectiveConfig\.provider/s);
+  });
+});
+
+// ─── 7. formatPremiumSummary — byokActive indicator ─────────────────────────
+
+describe("formatPremiumSummary — byokActive indicator", () => {
+  const summary = {
+    byStage: { plan: { count: 3, premiumCost: 3.0 } },
+    totalRequests: 3,
+    totalPremiumCost: 3.0,
+    budgetPercentUsed: 100,
+  };
+
+  it("does not include BYOK line when byokActive is false", () => {
+    const output = formatPremiumSummary(summary, DEFAULT_ACCOUNTING_CONFIG, [], false);
+    assert.ok(!output.includes("BYOK fallback"));
+  });
+
+  it("does not include BYOK line when byokActive is undefined (backward compat)", () => {
+    const output = formatPremiumSummary(summary, DEFAULT_ACCOUNTING_CONFIG);
+    assert.ok(!output.includes("BYOK fallback"));
+  });
+
+  it("includes BYOK line when byokActive is true", () => {
+    const output = formatPremiumSummary(summary, DEFAULT_ACCOUNTING_CONFIG, [], true);
+    assert.ok(output.includes("BYOK fallback was active this session"));
+  });
+
+  it("includes BYOK line after downgrades section", () => {
+    const downgrades = [{ originalModel: "claude-sonnet", downgradedTo: "gpt-4o-mini", percentUsed: 80 }];
+    const output = formatPremiumSummary(summary, DEFAULT_ACCOUNTING_CONFIG, downgrades, true);
+    const byokIdx = output.indexOf("BYOK fallback");
+    const downgradeIdx = output.indexOf("Model downgrades:");
+    assert.ok(byokIdx > downgradeIdx);
   });
 });
