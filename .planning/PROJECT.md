@@ -26,10 +26,10 @@ Deliver the same reliable GSD workflow outcomes while using fewer, higher-value 
 - ✓ Phase 08 validated execute/verify workflow CLI dispatch and settings-driven backend routing (EXEC-01)
 - ✓ Phase 09 validated autonomous orchestration stage/tool config threading and Copilot-backed unit session setup (EXEC-02)
 - ✓ Phase 10 validated roadmap/requirements management command routing through Copilot backend with full dispatch and test coverage (FLOW-01)
+- ✓ Phase 11 validated free-tier model fallback: suggestDowngrade() wired into CopilotSessionBackend session creation with telemetry surfacing (FLOW-02)
 
 ### Active
 
-- [ ] User receives free-tier fallback to 0x models automatically under quota pressure (FLOW-02)
 - [ ] User can use BYOK fallback when premium quota is exhausted (FLOW-03)
 
 ### Out of Scope
@@ -68,6 +68,7 @@ GSD 2 is a large TypeScript monorepo with modular layers for CLI routing, orches
 - Phase 08 is complete: execute-phase/verify-work CLI dispatch now routes through settings-driven backend selection for Copilot parity.
 - Phase 09 is complete: autonomous orchestration now threads per-unit stage and tool-profile config through dispatch, runUnit, and newSession for Copilot-backed sessions.
 - Phase 10 is complete: roadmap/requirements management commands now route through Copilot backend with stage-tier mappings and passing dispatch/workflow coverage tests.
+- Phase 11 is complete: free-tier model fallback (`suggestDowngrade()`) wired into `CopilotSessionBackend` — when budget pressure is detected at session creation, requested model is overridden with a 0× cost candidate and surfaced via stderr notification and telemetry.
 
 ## Current Milestone: v1.1 Next Steps
 
@@ -98,4 +99,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-26 — Phase 10 complete (FLOW-01 validated)*
+*Last updated: 2026-03-26 — Phase 11 complete (FLOW-02 validated)*
