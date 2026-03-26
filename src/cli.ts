@@ -349,6 +349,86 @@ if (cliFlags.messages[0] === 'verify-work') {
   process.exit(0)
 }
 
+// `gsd new-project [description]` — roadmap management via /settings backend (defaultBackend).
+// Accounting: roadmap → low tier (0.33×) per Phase 10 D-04.
+if (cliFlags.messages[0] === 'new-project') {
+  const { runRoadmapWorkflow } = await import('./workflows/roadmap.js')
+  const backend = resolvePlanningBackendFromSettings()
+  process.stderr.write(`[new-project] backend=${backend} stage=roadmap\n`)
+  const args = cliFlags.messages.slice(1).join(' ') || ''
+  const result = await runRoadmapWorkflow(
+    { command: 'new-project', args, cwd: process.cwd() },
+    { backend },
+  )
+  process.stderr.write(`[new-project] complete: backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
+// `gsd new-milestone [description]` — roadmap management via /settings backend (defaultBackend).
+// Accounting: roadmap → low tier (0.33×) per Phase 10 D-04.
+if (cliFlags.messages[0] === 'new-milestone') {
+  const { runRoadmapWorkflow } = await import('./workflows/roadmap.js')
+  const backend = resolvePlanningBackendFromSettings()
+  process.stderr.write(`[new-milestone] backend=${backend} stage=roadmap\n`)
+  const args = cliFlags.messages.slice(1).join(' ') || ''
+  const result = await runRoadmapWorkflow(
+    { command: 'new-milestone', args, cwd: process.cwd() },
+    { backend },
+  )
+  process.stderr.write(`[new-milestone] complete: backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
+// `gsd add-phase [description]` — roadmap management via /settings backend (defaultBackend).
+// Accounting: roadmap → low tier (0.33×) per Phase 10 D-04.
+if (cliFlags.messages[0] === 'add-phase') {
+  const { runRoadmapWorkflow } = await import('./workflows/roadmap.js')
+  const backend = resolvePlanningBackendFromSettings()
+  process.stderr.write(`[add-phase] backend=${backend} stage=roadmap\n`)
+  const args = cliFlags.messages.slice(1).join(' ') || ''
+  const result = await runRoadmapWorkflow(
+    { command: 'add-phase', args, cwd: process.cwd() },
+    { backend },
+  )
+  process.stderr.write(`[add-phase] complete: backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
+// `gsd remove-phase [description]` — roadmap management via /settings backend (defaultBackend).
+// Accounting: roadmap → low tier (0.33×) per Phase 10 D-04.
+if (cliFlags.messages[0] === 'remove-phase') {
+  const { runRoadmapWorkflow } = await import('./workflows/roadmap.js')
+  const backend = resolvePlanningBackendFromSettings()
+  process.stderr.write(`[remove-phase] backend=${backend} stage=roadmap\n`)
+  const args = cliFlags.messages.slice(1).join(' ') || ''
+  const result = await runRoadmapWorkflow(
+    { command: 'remove-phase', args, cwd: process.cwd() },
+    { backend },
+  )
+  process.stderr.write(`[remove-phase] complete: backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
+// `gsd progress [scope]` — requirements management via /settings backend (defaultBackend).
+// Accounting: requirements → low tier (0.33×) per Phase 10 D-04.
+if (cliFlags.messages[0] === 'progress') {
+  const { runRequirementsWorkflow } = await import('./workflows/requirements.js')
+  const backend = resolvePlanningBackendFromSettings()
+  process.stderr.write(`[progress] backend=${backend} stage=requirements\n`)
+  const scope = cliFlags.messages.slice(1).join(' ') || ''
+  const result = await runRequirementsWorkflow(
+    { command: 'progress', args: scope, cwd: process.cwd() },
+    { backend },
+  )
+  process.stderr.write(`[progress] complete: backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
 // Pi's tool bootstrap can mis-detect already-installed fd/rg on some systems
 // because spawnSync(..., ["--version"]) returns EPERM despite a zero exit code.
 // Provision local managed binaries first so Pi sees them without probing PATH.
