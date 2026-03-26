@@ -311,6 +311,44 @@ if (cliFlags.messages[0] === 'plan-phase') {
   process.exit(0)
 }
 
+// `gsd execute-phase [objective]` — run execute-phase workflow using /settings backend (defaultBackend).
+// If unset or unavailable, fallback is 'pi'.
+// Accounting: execute-phase → standard tier (1×) per Phase 2 stage routing.
+if (cliFlags.messages[0] === 'execute-phase') {
+  const { runExecuteWorkflow } = await import('./workflows/execute-phase.js')
+  const backend = resolvePlanningBackendFromSettings()
+  // D-10: log backend and accounting tier at command start
+  process.stderr.write(`[execute-phase] backend=${backend} tier=standard\n`)
+  const objective = cliFlags.messages.slice(1).join(' ') || 'execute phase'
+  const result = await runExecuteWorkflow(
+    { objective, cwd: process.cwd() },
+    { backend },
+  )
+  // D-10: log summary in final output for parity tracing
+  process.stderr.write(`[execute-phase] complete: toolCalls=${result.toolCallCount}, backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
+// `gsd verify-work [scope]` — run verify-work workflow using /settings backend (defaultBackend).
+// If unset or unavailable, fallback is 'pi'.
+// Accounting: verify-work → free tier (0×) per Phase 2 stage routing.
+if (cliFlags.messages[0] === 'verify-work') {
+  const { runVerifyWorkflow } = await import('./workflows/verify-work.js')
+  const backend = resolvePlanningBackendFromSettings()
+  // D-10: log backend and accounting tier at command start
+  process.stderr.write(`[verify-work] backend=${backend} tier=free\n`)
+  const scope = cliFlags.messages.slice(1).join(' ') || 'verify work'
+  const result = await runVerifyWorkflow(
+    { scope, cwd: process.cwd() },
+    { backend },
+  )
+  // D-10: log summary in final output for parity tracing
+  process.stderr.write(`[verify-work] complete: passed=${result.passed}, checks=${result.checks.length}, backend=${backend}, ts=${result.timestamp}\n`)
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+  process.exit(0)
+}
+
 // Pi's tool bootstrap can mis-detect already-installed fd/rg on some systems
 // because spawnSync(..., ["--version"]) returns EPERM despite a zero exit code.
 // Provision local managed binaries first so Pi sees them without probing PATH.
