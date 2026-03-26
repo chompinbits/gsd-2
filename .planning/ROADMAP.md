@@ -87,7 +87,11 @@ Plans:
   3. User sees a notification or log entry when downgrade to free-tier model occurs
   4. Workflow execution continues at reduced quality rather than stopping when budget is tight
   5. User can observe current model tier in telemetry or session output
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Core downgrade logic, config extension, and unit tests
+- [ ] 11-02-PLAN.md — Wire downgrade into session creation and telemetry
 
 ### Phase 12: BYOK Fallback
 **Goal**: Users can configure and use a BYOK provider as fallback when premium quota is exhausted
