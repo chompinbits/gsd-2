@@ -122,6 +122,26 @@ describe("copilot session routing", () => {
 		);
 	});
 
+	it("sdk.ts copilot branch calls copilotBackend.setSettingsManager", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("copilotBackend.setSettingsManager(settingsManager)"),
+			"sdk.ts must call copilotBackend.setSettingsManager(settingsManager) — BYOK requires it",
+		);
+	});
+
+	it("sdk.ts setSettingsManager is called after setAccountingConfig", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		const accountingIdx = sdkSource.indexOf("copilotBackend.setAccountingConfig(");
+		const settingsIdx = sdkSource.indexOf("copilotBackend.setSettingsManager(");
+		assert.ok(accountingIdx > -1, "setAccountingConfig must exist");
+		assert.ok(settingsIdx > -1, "setSettingsManager must exist");
+		assert.ok(
+			settingsIdx > accountingIdx,
+			"setSettingsManager must be called after setAccountingConfig",
+		);
+	});
+
 	it("CopilotSessionBackend.createSession returns BackendSessionHandle-shaped object", async () => {
 		const mockSession = {
 			sessionId: "test-session-123",

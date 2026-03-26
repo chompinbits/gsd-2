@@ -281,6 +281,7 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 		const copilotBackend = new CopilotSessionBackend(clientManager);
 		const accountingConfig = loadAccountingConfig(join(agentDir, "config.json"));
 		copilotBackend.setAccountingConfig(accountingConfig);
+		copilotBackend.setSettingsManager(settingsManager);
 		try {
 			await copilotBackend.initialize();
 			const sessionConfig = {
