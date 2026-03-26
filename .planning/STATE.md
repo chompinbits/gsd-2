@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Next Steps
-status: Phase complete — ready for verification
-stopped_at: Completed 08-02-PLAN.md
-last_updated: "2026-03-26T01:50:10.393Z"
+status: Verification blocked — phase gaps found
+stopped_at: Phase 08 verification found CLI routing gaps
+last_updated: "2026-03-26T02:01:17Z"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 0
   total_plans: 2
   completed_plans: 2
 ---
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Deliver the same reliable GSD workflow outcomes while using fewer, higher-value premium requests per completed unit of work.
-**Current focus:** Phase 08 — execute-verify-backend-routing
+**Current focus:** Phase 08 — gap closure planning after verification
 
 ## Current Position
 
-Phase: 08 (execute-verify-backend-routing) — EXECUTING
-Plan: 2 of 2
+Phase: 08 (execute-verify-backend-routing) — VERIFICATION BLOCKED
+Plan: 2 of 2 complete
 
 ## Performance Metrics
 
@@ -67,16 +67,18 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Plan gap closure for missing `execute-phase` and `verify-work` CLI dispatch in `src/cli.ts`
+- Wire `resolvePlanningBackendFromSettings()` into execute/verify dispatch paths
 
 ### Blockers/Concerns
 
+- Phase 08 verification found 3 roadmap gaps: no `gsd execute-phase` CLI command, no `gsd verify-work` CLI command, and no settings-driven backend routing for execute/verify
 - Auto-mode newSession() rebuilds full tool set — per-unit tool restriction must thread through without breaking extension rebuild logic (EXEC-02)
 - SDK provider config runtime behavior for BYOK auth failure mid-session needs runtime testing (FLOW-03)
 - Budget threshold tuning for suggestDowngrade() needs user testing to calibrate UX (FLOW-02)
 
 ## Session Continuity
 
-Last session: 2026-03-26T01:50:10.390Z
-Stopped at: Completed 08-02-PLAN.md
-Resume file: None
+Last session: 2026-03-26T02:01:17Z
+Stopped at: Phase 08 verification found CLI routing gaps
+Resume file: .planning/phases/08-execute-verify-backend-routing/08-VERIFICATION.md

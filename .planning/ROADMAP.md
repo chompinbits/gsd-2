@@ -24,7 +24,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Regression & Traceability** - Parity suites in default test path with requirement-level evidence *(v1.0)*
 - [x] **Phase 6: Stage-Aware Accounting** - Accounting contract propagation from workflow stage hints *(v1.0)*
 - [x] **Phase 7: Live Operations Validation** - Copilot-backed parity, switchover rollback, session resume evidence *(v1.0)*
-- [x] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend (completed 2026-03-26)
+- [ ] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend
 - [ ] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config
 - [ ] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend
 - [ ] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure
@@ -98,7 +98,7 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 8. Execute & Verify Backend Routing | 2/2 | Complete   | 2026-03-26 |
+| 8. Execute & Verify Backend Routing | 2/2 | Gaps found |  |
 | 9. Autonomous Orchestration Migration | 0/? | Not started | - |
 | 10. Command Coverage Completion | 0/? | Not started | - |
 | 11. Free-Tier Model Fallback | 0/? | Not started | - |
