@@ -17,6 +17,11 @@ export const STAGE_TIER_MAP: Record<string, MultiplierTier> = {
   "plan-phase": "standard",
   "research-phase": "standard",
   "execute-task": "standard",
+
+  // v1.1 stage aliases — auto-dispatch and workflow entry-point names (per D-05)
+  "execute-phase": "standard",  // 1× — synonym for execute-task used by auto-dispatch
+  "verify-phase": "free",       // 0× — synonym for verify-work used by auto-dispatch
+  "run-uat": "free",            // 0× — user acceptance testing
 };
 
 /**
