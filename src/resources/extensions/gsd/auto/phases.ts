@@ -20,9 +20,11 @@ import {
   type LoopState,
   type PreDispatchData,
   type IterationData,
+  type UnitSessionConfig,
 } from "./types.js";
 import { detectStuck } from "./detect-stuck.js";
 import { runUnit } from "./run-unit.js";
+import { UNIT_TYPE_TO_STAGE, UNIT_TYPE_TOOL_PROFILE, resolveToolProfile } from "../auto-dispatch.js";
 import { debugLog } from "../debug-logger.js";
 import { gsdRoot } from "../paths.js";
 import { atomicWriteSync } from "../atomic-write.js";
@@ -650,6 +652,7 @@ export async function runDispatch(
       state, mid, midTitle,
       isRetry: false, previousTier: undefined,
       hookModelOverride: preDispatchResult.model,
+      stage: dispatchResult.stage,  // Phase 9 / EXEC-02 — propagate stage from dispatch
     },
   };
 }
@@ -1023,6 +1026,15 @@ export async function runUnitPhase(
     unitType,
     unitId,
   });
+
+  // ── Per-unit session config (Phase 9 / EXEC-02) ──
+  const toolProfile = UNIT_TYPE_TOOL_PROFILE[unitType] ?? "coding";
+  const resolvedToolNames = resolveToolProfile(toolProfile);
+  const unitConfig: UnitSessionConfig = {
+    stage: iterData.stage ?? UNIT_TYPE_TO_STAGE[unitType] ?? unitType,
+    availableToolNames: resolvedToolNames,
+  };
+
   const unitResult = await runUnit(
     ctx,
     pi,
@@ -1030,6 +1042,7 @@ export async function runUnitPhase(
     unitType,
     unitId,
     finalPrompt,
+    unitConfig,
   );
   debugLog("autoLoop", {
     phase: "runUnit-end",

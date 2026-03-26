@@ -8,7 +8,7 @@ import type { ExtensionAPI, ExtensionContext } from "@gsd/pi-coding-agent";
 
 import type { AutoSession } from "./session.js";
 import { NEW_SESSION_TIMEOUT_MS } from "./session.js";
-import type { UnitResult } from "./types.js";
+import type { UnitResult, UnitSessionConfig } from "./types.js";
 import { _setCurrentResolve, _setSessionSwitchInFlight } from "./resolve.js";
 import { debugLog } from "../debug-logger.js";
 
@@ -27,6 +27,7 @@ export async function runUnit(
   unitType: string,
   unitId: string,
   prompt: string,
+  unitConfig?: UnitSessionConfig,
 ): Promise<UnitResult> {
   debugLog("runUnit", { phase: "start", unitType, unitId });
 
@@ -37,7 +38,9 @@ export async function runUnit(
   let sessionTimeoutHandle: ReturnType<typeof setTimeout> | undefined;
   _setSessionSwitchInFlight(true);
   try {
-    const sessionPromise = s.cmdCtx!.newSession().finally(() => {
+    const sessionPromise = s.cmdCtx!.newSession({
+      activeToolNames: unitConfig?.availableToolNames,
+    }).finally(() => {
       _setSessionSwitchInFlight(false);
     });
     const timeoutPromise = new Promise<{ cancelled: true }>((resolve) => {

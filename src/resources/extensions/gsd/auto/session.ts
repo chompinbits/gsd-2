@@ -129,6 +129,10 @@ export class AutoSession {
   // ── Dispatch circuit breakers ──────────────────────────────────────
   rewriteAttemptCount = 0;
 
+  // ── Backend config ────────────────────────────────────────────────
+  /** Backend resolved from settings at auto-mode start. Per-unit overrides layer on top. (Phase 9 / EXEC-02, D-08) */
+  defaultBackend: "pi" | "copilot" = "pi";
+
   // ── Metrics ──────────────────────────────────────────────────────────────
   autoStartTime = 0;
   lastPromptCharCount: number | undefined;
@@ -217,6 +221,7 @@ export class AutoSession {
     this.pendingQuickTasks = [];
     this.sidecarQueue = [];
     this.rewriteAttemptCount = 0;
+    this.defaultBackend = "pi";
 
     // Signal handler
     this.sigtermHandler = null;
