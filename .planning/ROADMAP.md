@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure (completed 2026-03-26)
 - [x] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted (completed 2026-03-26)
 - [x] **Phase 13: BYOK Fix & Verification** - Fix setSettingsManager wiring in sdk.ts and produce Phase 12 VERIFICATION.md (completed 2026-03-26)
-- [ ] **Phase 14: Telemetry Consumer Wiring** - Wire getDowngrades()/getByokActivations() into formatPremiumSummary callers
+- [x] **Phase 14: Telemetry Consumer Wiring** - Wire getDowngrades()/getByokActivations() into formatPremiumSummary callers (completed 2026-03-26)
 - [ ] **Phase 15: Nyquist Compliance Audit** - Create/update VALIDATION.md files across Phases 08–12
 
 ## Phase Details
@@ -136,10 +136,10 @@ Plans:
   1. `getDowngrades()` return value is passed to `formatPremiumSummary` at session teardown or equivalent call site
   2. `getByokActivations()` return value is passed to `formatPremiumSummary` at session teardown or equivalent call site
   3. Structured telemetry report is reachable in production path for both downgrade and BYOK events
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 14-01-PLAN.md — Wire getDowngrades()/getByokActivations() into formatPremiumSummary at session teardown + source-shape tests
+- [x] 14-01-PLAN.md — Wire getDowngrades()/getByokActivations() into formatPremiumSummary at session teardown + source-shape tests
 
 ### Phase 15: Nyquist Compliance Audit
 **Goal**: All v1.1 phases have valid VALIDATION.md files reflecting actual post-execution compliance status
@@ -165,5 +165,5 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | 11. Free-Tier Model Fallback | 2/2 | Complete    | 2026-03-26 |
 | 12. BYOK Fallback | 2/2 | Complete   | 2026-03-26 |
 | 13. BYOK Fix & Verification | 0/? | Complete    | 2026-03-26 |
-| 14. Telemetry Consumer Wiring | 0/? | Pending | — |
+| 14. Telemetry Consumer Wiring | 1/1 | Complete   | 2026-03-26 |
 | 15. Nyquist Compliance Audit | 0/? | Pending | — |
