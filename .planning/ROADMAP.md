@@ -24,7 +24,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Regression & Traceability** - Parity suites in default test path with requirement-level evidence *(v1.0)*
 - [x] **Phase 6: Stage-Aware Accounting** - Accounting contract propagation from workflow stage hints *(v1.0)*
 - [x] **Phase 7: Live Operations Validation** - Copilot-backed parity, switchover rollback, session resume evidence *(v1.0)*
-- [ ] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend
+- [x] **Phase 8: Execute & Verify Backend Routing** - Execute/verify workflows routed through Copilot SDK backend (completed 2026-03-26)
 - [ ] **Phase 9: Autonomous Orchestration Migration** - Full auto-mode loop using Copilot backend with per-unit config
 - [ ] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend
 - [ ] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure
@@ -41,12 +41,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User can run verify-work with Copilot SDK backend and receive UAT verification results
   3. Backend routing config (defaultBackend: "copilot") controls execute/verify workflow paths without code changes
   4. Accounting telemetry captures per-plan premium request usage during execute/verify sessions
-**Plans:** 3 plans (2 complete, 1 gap closure)
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 08-01-PLAN.md — Stage aliases + execute/verify workflow wrappers
 - [x] 08-02-PLAN.md — Automated test coverage for routing, tiers, and tool profiles
-- [ ] 08-03-PLAN.md — Gap closure: CLI dispatch blocks for execute-phase and verify-work
+- [x] 08-03-PLAN.md — Gap closure: CLI dispatch blocks for execute-phase and verify-work
 
 ### Phase 9: Autonomous Orchestration Migration
 **Goal**: Users can run full autonomous orchestration end-to-end with Copilot SDK as default backend
@@ -99,7 +99,7 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 8. Execute & Verify Backend Routing | 2/3 | Gap closure planned |  |
+| 8. Execute & Verify Backend Routing | 3/3 | Complete   | 2026-03-26 |
 | 9. Autonomous Orchestration Migration | 0/? | Not started | - |
 | 10. Command Coverage Completion | 0/? | Not started | - |
 | 11. Free-Tier Model Fallback | 0/? | Not started | - |

@@ -10,7 +10,7 @@ Requirements for this milestone only. Each maps to exactly one roadmap phase.
 
 ### Execution and Verification
 
-- [ ] **EXEC-01**: User can run execute and verify workflows entirely on Copilot SDK backend.
+- [x] **EXEC-01**: User can run execute and verify workflows entirely on Copilot SDK backend.
 - [ ] **EXEC-02**: User can run full autonomous orchestration with Copilot SDK as default backend.
 
 ### Command Coverage
@@ -43,7 +43,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| EXEC-01 | Phase 8 | Pending |
+| EXEC-01 | Phase 8 | Complete |
 | EXEC-02 | Phase 9 | Pending |
 | FLOW-01 | Phase 10 | Pending |
 | FLOW-02 | Phase 11 | Pending |
