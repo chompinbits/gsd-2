@@ -102,7 +102,11 @@ Plans:
   2. When premium quota is fully exhausted, system falls back to configured BYOK provider automatically
   3. BYOK sessions route through the same BackendSessionHandle interface with no workflow changes needed
   4. User sees clear indication when running on BYOK provider vs Copilot premium
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — BYOK types, settings config, exhaustion logic + unit tests
+- [ ] 12-02-PLAN.md — Wire BYOK into session creation and telemetry
 
 ## Progress
 
