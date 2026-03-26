@@ -29,6 +29,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend (completed 2026-03-26)
 - [x] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure (completed 2026-03-26)
 - [x] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted (completed 2026-03-26)
+- [ ] **Phase 13: BYOK Fix & Verification** - Fix setSettingsManager wiring in sdk.ts and produce Phase 12 VERIFICATION.md
+- [ ] **Phase 14: Telemetry Consumer Wiring** - Wire getDowngrades()/getByokActivations() into formatPremiumSummary callers
+- [ ] **Phase 15: Nyquist Compliance Audit** - Create/update VALIDATION.md files across Phases 08–12
 
 ## Phase Details
 
@@ -108,6 +111,38 @@ Plans:
 - [x] 12-01-PLAN.md — BYOK types, settings config, exhaustion logic + unit tests
 - [x] 12-02-PLAN.md — Wire BYOK into session creation and telemetry
 
+### Phase 13: BYOK Fix & Verification
+**Goal**: BYOK fallback activates correctly via all CLI workflow paths and Phase 12 is independently verified
+**Depends on**: Phase 12
+**Requirements**: FLOW-03
+**Gap Closure:** Closes gaps from v1.1 audit
+**Success Criteria** (what must be TRUE):
+  1. `sdk.ts` calls `copilotBackend.setSettingsManager(settingsManager)` after `setAccountingConfig`
+  2. `_applyByokIfExhausted()` can activate BYOK — `_settingsManager` is no longer always undefined
+  3. BYOK activates on CLI workflow paths (execute-phase, verify-work, roadmap/requirements commands) when quota is exhausted
+  4. Phase 12 VERIFICATION.md exists and confirms FLOW-03 success criteria met
+
+### Phase 14: Telemetry Consumer Wiring
+**Goal**: Structured telemetry report callers exist for downgrade and BYOK activation records
+**Depends on**: Phase 13
+**Requirements**: FLOW-02, FLOW-03
+**Gap Closure:** Closes gaps from v1.1 audit
+**Success Criteria** (what must be TRUE):
+  1. `getDowngrades()` return value is passed to `formatPremiumSummary` at session teardown or equivalent call site
+  2. `getByokActivations()` return value is passed to `formatPremiumSummary` at session teardown or equivalent call site
+  3. Structured telemetry report is reachable in production path for both downgrade and BYOK events
+
+### Phase 15: Nyquist Compliance Audit
+**Goal**: All v1.1 phases have valid VALIDATION.md files reflecting actual post-execution compliance status
+**Depends on**: Phase 13
+**Requirements**: FLOW-01, FLOW-02, FLOW-03
+**Gap Closure:** Closes gaps from v1.1 audit
+**Success Criteria** (what must be TRUE):
+  1. Phase 10 has a VALIDATION.md created
+  2. Phases 08, 09, 11, 12 VALIDATION.md files are updated to reflect actual post-execution Nyquist status
+  3. Any phase with all waves verified has `nyquist_compliant: true`
+  4. No phase is left with a draft-state VALIDATION.md that contradicts its verification results
+
 ## Progress
 
 **Execution Order:**
@@ -120,3 +155,6 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | 10. Command Coverage Completion | 2/2 | Complete    | 2026-03-26 |
 | 11. Free-Tier Model Fallback | 2/2 | Complete    | 2026-03-26 |
 | 12. BYOK Fallback | 2/2 | Complete   | 2026-03-26 |
+| 13. BYOK Fix & Verification | 0/? | Pending | — |
+| 14. Telemetry Consumer Wiring | 0/? | Pending | — |
+| 15. Nyquist Compliance Audit | 0/? | Pending | — |
