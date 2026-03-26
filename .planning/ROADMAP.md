@@ -71,7 +71,11 @@ Plans:
   1. User can run roadmap commands (new-project, new-milestone, add-phase, remove-phase) on Copilot backend
   2. User can run requirements commands (plan-phase requirements parsing, progress status) on Copilot backend
   3. All management commands respect defaultBackend config setting without per-command overrides
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Stage router entries, workflow wrappers, CLI dispatch blocks
+- [ ] 10-02-PLAN.md — Automated tests for routing, stage-tier, and dispatch coverage
 
 ### Phase 11: Free-Tier Model Fallback
 **Goal**: Users receive configurable free-tier model fallback under quota pressure
@@ -105,6 +109,6 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 |-------|----------------|--------|-----------|
 | 8. Execute & Verify Backend Routing | 3/3 | Complete   | 2026-03-26 |
 | 9. Autonomous Orchestration Migration | 1/2 | In Progress|  |
-| 10. Command Coverage Completion | 0/? | Not started | - |
+| 10. Command Coverage Completion | 0/2 | Planned | - |
 | 11. Free-Tier Model Fallback | 0/? | Not started | - |
 | 12. BYOK Fallback | 0/? | Not started | - |
