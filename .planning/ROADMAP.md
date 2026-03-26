@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: Command Coverage Completion** - Roadmap/requirements management commands through Copilot backend (completed 2026-03-26)
 - [x] **Phase 11: Free-Tier Model Fallback** - Automatic downgrade to 0× models under quota pressure (completed 2026-03-26)
 - [x] **Phase 12: BYOK Fallback** - BYOK provider injection when premium quota is exhausted (completed 2026-03-26)
-- [ ] **Phase 13: BYOK Fix & Verification** - Fix setSettingsManager wiring in sdk.ts and produce Phase 12 VERIFICATION.md
+- [x] **Phase 13: BYOK Fix & Verification** - Fix setSettingsManager wiring in sdk.ts and produce Phase 12 VERIFICATION.md (completed 2026-03-26)
 - [ ] **Phase 14: Telemetry Consumer Wiring** - Wire getDowngrades()/getByokActivations() into formatPremiumSummary callers
 - [ ] **Phase 15: Nyquist Compliance Audit** - Create/update VALIDATION.md files across Phases 08–12
 
@@ -121,7 +121,7 @@ Plans:
   2. `_applyByokIfExhausted()` can activate BYOK — `_settingsManager` is no longer always undefined
   3. BYOK activates on CLI workflow paths (execute-phase, verify-work, roadmap/requirements commands) when quota is exhausted
   4. Phase 12 VERIFICATION.md exists and confirms FLOW-03 success criteria met
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 13-01-PLAN.md — Fix setSettingsManager wiring in sdk.ts + source-shape regression test
@@ -160,6 +160,6 @@ Phases execute in numeric order: 8 → 9 → 10 → 11 → 12
 | 10. Command Coverage Completion | 2/2 | Complete    | 2026-03-26 |
 | 11. Free-Tier Model Fallback | 2/2 | Complete    | 2026-03-26 |
 | 12. BYOK Fallback | 2/2 | Complete   | 2026-03-26 |
-| 13. BYOK Fix & Verification | 0/? | Pending | — |
+| 13. BYOK Fix & Verification | 0/? | Complete    | 2026-03-26 |
 | 14. Telemetry Consumer Wiring | 0/? | Pending | — |
 | 15. Nyquist Compliance Audit | 0/? | Pending | — |
