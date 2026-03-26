@@ -21,10 +21,12 @@ export function formatStageLine(
 /**
  * Returns a multi-line formatted premium request summary block.
  * Includes per-stage breakdown, totals, budget usage percentage, and a visual bar.
+ * Pass `downgrades` to include model downgrade events in the output (D-12).
  */
 export function formatPremiumSummary(
   summary: PremiumRequestSummary,
   config: AccountingConfig,
+  downgrades?: Array<{ originalModel: string; downgradedTo: string; percentUsed: number }>,
 ): string {
   const header = "Premium Request Summary";
   const divider = "═".repeat(header.length);
@@ -50,7 +52,7 @@ export function formatPremiumSummary(
       : 0;
   const bar = `[${"█".repeat(filled)}${"░".repeat(barWidth - filled)}] ${summary.budgetPercentUsed.toFixed(1)}%`;
 
-  return [
+  const lines = [
     header,
     divider,
     colHeader,
@@ -60,7 +62,17 @@ export function formatPremiumSummary(
     totalLine,
     budgetLine,
     bar,
-  ].join("\n");
+  ];
+
+  if (downgrades && downgrades.length > 0) {
+    lines.push("");
+    lines.push("Model downgrades:");
+    for (const d of downgrades) {
+      lines.push(`  ${d.originalModel} → ${d.downgradedTo} (at ${d.percentUsed.toFixed(1)}% budget)`);
+    }
+  }
+
+  return lines.join("\n");
 }
 
 /**
