@@ -121,6 +121,11 @@ Plans:
   2. `_applyByokIfExhausted()` can activate BYOK — `_settingsManager` is no longer always undefined
   3. BYOK activates on CLI workflow paths (execute-phase, verify-work, roadmap/requirements commands) when quota is exhausted
   4. Phase 12 VERIFICATION.md exists and confirms FLOW-03 success criteria met
+**Plans:** 2 plans
+
+Plans:
+- [ ] 13-01-PLAN.md — Fix setSettingsManager wiring in sdk.ts + source-shape regression test
+- [ ] 13-02-PLAN.md — Produce Phase 12 VERIFICATION.md with line-level evidence
 
 ### Phase 14: Telemetry Consumer Wiring
 **Goal**: Structured telemetry report callers exist for downgrade and BYOK activation records
