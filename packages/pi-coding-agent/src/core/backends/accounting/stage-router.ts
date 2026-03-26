@@ -9,9 +9,12 @@ export const STAGE_TIER_MAP: Record<string, MultiplierTier> = {
   "discuss-phase": "free",
   "verify-work": "free",
 
-  // Low (0.33×) — planning checks and validation
+  // Low (0.33×) — planning checks, validation, and management commands
   "plan-check": "low",
   "validate-phase": "low",
+  // Low (0.33×) — management commands: roadmap and requirements (Phase 10 D-04)
+  "roadmap": "low",
+  "requirements": "low",
 
   // Standard (1×) — full planning, research, and execution work
   "plan-phase": "standard",
