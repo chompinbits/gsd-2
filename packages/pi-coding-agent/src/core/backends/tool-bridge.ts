@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { AgentTool, AgentToolResult } from "@gsd/pi-agent-core";
-import { defineTool } from "@github/copilot-sdk";
+import { defineTool } from "./copilot-sdk-types.js";
 
 const BUILT_IN_TOOL_NAMES = new Set(["bash", "read", "edit", "write", "grep", "find", "ls"]);
 

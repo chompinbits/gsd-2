@@ -1,5 +1,6 @@
 import type { AgentEvent } from "@gsd/pi-agent-core";
-import { approveAll } from "@github/copilot-sdk";
+import { approveAll } from "./copilot-sdk-types.js";
+import type { CopilotSession, SessionEvent } from "./copilot-sdk-types.js";
 import type { AccountingConfig } from "./accounting/index.js";
 import {
 	BudgetGuard,
@@ -13,7 +14,6 @@ import { isQuotaExhausted, resolveByokProvider } from "./accounting/byok.js";
 import type { BackendConfig, BackendSessionHandle, SendOptions, SessionBackend } from "./backend-interface.js";
 import type { SettingsManager } from "../settings-manager.js";
 import { CopilotClientManager } from "./copilot-client-manager.js";
-import type { CopilotSessionEvent } from "./event-translator.js";
 import { isSessionError, isSessionIdle, translateCopilotEvent } from "./event-translator.js";
 import { bridgeAllTools } from "./tool-bridge.js";
 
@@ -73,9 +73,9 @@ class AccountingSessionHandle implements BackendSessionHandle {
 }
 
 class CopilotSessionHandle implements BackendSessionHandle {
-	private readonly sdkSession: any;
+	private readonly sdkSession: CopilotSession;
 
-	constructor(sdkSession: any) {
+	constructor(sdkSession: CopilotSession) {
 		this.sdkSession = sdkSession;
 	}
 
@@ -84,12 +84,12 @@ class CopilotSessionHandle implements BackendSessionHandle {
 	}
 
 	async send(prompt: string, options?: SendOptions): Promise<string> {
-		const result = await this.sdkSession.sendAndWait({ prompt, attachments: options?.attachments });
+		const result = await this.sdkSession.sendAndWait({ prompt, attachments: options?.attachments as never });
 		return String(result?.data?.content ?? "");
 	}
 
 	subscribe(listener: (event: AgentEvent) => void): () => void {
-		return this.sdkSession.on((event: CopilotSessionEvent) => {
+		return this.sdkSession.on((event: SessionEvent) => {
 			if (isSessionIdle(event) || isSessionError(event)) {
 				return;
 			}

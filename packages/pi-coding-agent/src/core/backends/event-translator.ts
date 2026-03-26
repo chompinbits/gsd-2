@@ -1,10 +1,22 @@
 import type { AgentEvent } from "@gsd/pi-agent-core";
 import type { AssistantMessageEvent } from "@gsd/pi-ai";
+import type { SessionEvent } from "./copilot-sdk-types.js";
 
+/**
+ * Minimal structural interface describing the subset of SDK SessionEvent
+ * that the translator actually inspects. This acts as the internal contract
+ * so changes to the SDK's full SessionEvent union surface here first.
+ *
+ * Any SDK SessionEvent satisfies this interface (structural compatibility).
+ */
 export interface CopilotSessionEvent {
 	type: string;
-	data?: Record<string, any>;
+	data?: Record<string, unknown>;
 }
+
+// Verify structural compatibility: SessionEvent must be assignable to CopilotSessionEvent.
+// If the SDK changes the shape of its events in a breaking way, this line will error.
+type _SessionEventCompatibilityCheck = SessionEvent extends CopilotSessionEvent ? true : never;
 
 function toAssistantMessage(text: string) {
 	return {

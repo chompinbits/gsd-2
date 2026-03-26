@@ -1,4 +1,4 @@
-import { CopilotClient } from "@github/copilot-sdk";
+import { CopilotClient } from "./copilot-sdk-types.js";
 
 const STOP_TIMEOUT_MS = 5000;
 
