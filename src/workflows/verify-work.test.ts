@@ -19,7 +19,7 @@ const moduleSource = readFileSync(
 )
 
 // Dynamic import for runtime parser tests (pure function, no side-effects)
-const { extractVerifyChecks } = await import('./verify-work.ts')
+const { extractVerifyChecks } = await import('./verify-work.js')
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 1. Export Shape
