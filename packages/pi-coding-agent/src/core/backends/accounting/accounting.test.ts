@@ -92,6 +92,19 @@ describe("getStageMultiplierTier", () => {
   it("defaults to 'standard' for unknown stages", () => {
     assert.equal(getStageMultiplierTier("unknown-stage"), "standard");
   });
+
+  // v1.1 stage alias tests (per D-05)
+  it("returns 'standard' for execute-phase alias", () => {
+    assert.equal(getStageMultiplierTier("execute-phase"), "standard");
+  });
+
+  it("returns 'free' for verify-phase alias", () => {
+    assert.equal(getStageMultiplierTier("verify-phase"), "free");
+  });
+
+  it("returns 'free' for run-uat alias", () => {
+    assert.equal(getStageMultiplierTier("run-uat"), "free");
+  });
 });
 
 describe("resolveEffectiveTier", () => {
