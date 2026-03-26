@@ -142,6 +142,38 @@ describe("copilot session routing", () => {
 		);
 	});
 
+	it("sdk.ts cleanup calls copilotBackend.getDowngrades()", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("copilotBackend.getDowngrades()"),
+			"sdk.ts must call copilotBackend.getDowngrades() in cleanup — telemetry needs downgrade records",
+		);
+	});
+
+	it("sdk.ts cleanup calls copilotBackend.getByokActivations()", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("copilotBackend.getByokActivations()"),
+			"sdk.ts must call copilotBackend.getByokActivations() in cleanup — telemetry needs BYOK records",
+		);
+	});
+
+	it("sdk.ts cleanup calls formatPremiumSummary with downgrade and BYOK args", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("formatPremiumSummary("),
+			"sdk.ts must call formatPremiumSummary in cleanup to produce structured telemetry report",
+		);
+	});
+
+	it("sdk.ts cleanup emits telemetry via process.stderr.write", () => {
+		const sdkSource = readFileSync("packages/pi-coding-agent/src/core/sdk.ts", "utf8");
+		assert.ok(
+			sdkSource.includes("[gsd:accounting]"),
+			"sdk.ts must emit telemetry with [gsd:accounting] prefix via process.stderr.write",
+		);
+	});
+
 	it("CopilotSessionBackend.createSession returns BackendSessionHandle-shaped object", async () => {
 		const mockSession = {
 			sessionId: "test-session-123",
