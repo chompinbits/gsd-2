@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Next Steps
-status: Ready to plan
-stopped_at: Phase 11 context gathered
-last_updated: "2026-03-26T04:00:56.768Z"
+status: Ready to execute
+stopped_at: Completed 11-01-PLAN.md
+last_updated: "2026-03-26T04:20:30.405Z"
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 9
+  completed_plans: 8
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Deliver the same reliable GSD workflow outcomes while using fewer, higher-value premium requests per completed unit of work.
-**Current focus:** Phase 10 — command-coverage-completion
+**Current focus:** Phase 11 — free-tier-model-fallback
 
 ## Current Position
 
-Phase: 11
-Plan: Not started
+Phase: 11 (free-tier-model-fallback) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Plan: Not started
 | Phase 09 P02 | 63082438 | 2 tasks | 3 files |
 | Phase 10 P01 | 10 | 2 tasks | 4 files |
 | Phase 10 P02 | 3 | 2 tasks | 4 files |
+| Phase 11 P01 | 18 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 10]: roadmap and requirements commands route at low tier (0.33×) per D-04
 - [Phase 10]: CLI dispatch pattern follows existing discuss/plan/execute/verify pattern exactly
 - [Phase 10]: Test coverage: roadmap/requirements workflow wrappers proven via source-shape tests; CLI dispatch proven via 9-call-site assertion
+- [Phase 11]: suggestDowngrade is pure (no side effects) — safe to call from integration layer, session routing, or CLI
+- [Phase 11]: FREE_TIER_CANDIDATES derived from MODEL_MULTIPLIER_MAP filter+sort at module load time — stays in sync automatically
+- [Phase 11]: DEFAULT_FREE_TIER_FALLBACK enabled:true (opt-out model); thresholdPolicy 'warn'/'hard_stop' distinguishes warnThreshold vs 100% trigger
 
 ### Pending Todos
 
@@ -92,6 +96,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-26T04:00:56.764Z
-Stopped at: Phase 11 context gathered
-Resume file: .planning/phases/11-free-tier-model-fallback/11-CONTEXT.md
+Last session: 2026-03-26T04:20:30.402Z
+Stopped at: Completed 11-01-PLAN.md
+Resume file: None

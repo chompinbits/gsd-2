@@ -19,7 +19,7 @@ Requirements for this milestone only. Each maps to exactly one roadmap phase.
 
 ### Cost Safety and Fallbacks
 
-- [ ] **FLOW-02**: User can configure free-tier fallback behavior in GSD settings, and the system can route to 0x models automatically under quota pressure.
+- [x] **FLOW-02**: User can configure free-tier fallback behavior in GSD settings, and the system can route to 0x models automatically under quota pressure.
 - [ ] **FLOW-03**: User can use BYOK fallback when premium quota is exhausted.
 
 ## Future Requirements
@@ -46,7 +46,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXEC-01 | Phase 8 | Complete |
 | EXEC-02 | Phase 9 | Complete |
 | FLOW-01 | Phase 10 | Complete |
-| FLOW-02 | Phase 11 | Pending |
+| FLOW-02 | Phase 11 | Complete |
 | FLOW-03 | Phase 12 | Pending |
 
 **Coverage:**
