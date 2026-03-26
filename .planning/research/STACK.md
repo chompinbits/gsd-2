@@ -1,285 +1,232 @@
-# Technology Stack
+# Stack Research — v1.1 Additions
 
-**Project:** GSD 2 — Copilot SDK Migration
-**Researched:** 2026-03-24
-**Mode:** Subsequent milestone — migrating existing TypeScript CLI agent platform to GitHub Copilot SDK
+**Domain:** Copilot SDK Migration — execute/verify, autonomous orchestration, fallback layers
+**Researched:** 2026-03-25
+**Confidence:** HIGH (all additions build on shipped v1.0 adapter layer)
 
-## Recommended Stack
+> **Scope:** This document covers ONLY new stack additions or changes needed for v1.1.
+> The v1.0 foundation (`@github/copilot-sdk` 0.2.0, `CopilotSessionBackend`, accounting layer,
+> tool bridge, event translator, planning workflow routing) is **shipped and stable**.
+> See `.planning/milestones/` for v1.0 evidence.
 
-### Core Runtime: GitHub Copilot SDK (Node.js)
+---
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `@github/copilot-sdk` | latest (technical preview) | Agent orchestration, session management, tool execution loop | Replaces Pi SDK agent core (`@gsd/pi-agent-core`, `@gsd/pi-ai`) with GitHub's production-tested agentic loop. Provides model management, auth, MCP server integration, streaming, and multi-turn execution out of the box. **HIGH confidence** — Context7 + official SDK docs verified. |
-| Node.js | 22 LTS (existing) | Runtime environment | SDK requires Node.js 18+; project already targets 22 LTS. No change needed. **HIGH confidence** |
-| TypeScript | 5.4+ (existing) | Type-safe application code | SDK ships full TypeScript type definitions (`SessionEvent`, `CopilotClient`, `defineTool`, etc.). Existing strict-mode tsconfig compatible. **HIGH confidence** |
-| GitHub Copilot CLI | latest (npm install) | Backend process managed by SDK | The SDK spawns and manages a Copilot CLI process via JSON-RPC. Must be installed and in PATH (or configured via `cliPath`). The SDK communicates via stdio (default) or TCP transport. **HIGH confidence** — verified in SDK docs. |
+## What v1.1 Requires That v1.0 Does Not Yet Provide
 
-### Session & Orchestration Layer
+| Feature | Gap in v1.0 Stack | What Needs to Change |
+|---------|-------------------|----------------------|
+| **EXEC-01** Execute/verify workflows on Copilot backend | `execute-task` and `verify-work` stages route through the Copilot backend at the `createSession()` level, but the auto-mode `runUnit()` path — which creates sessions via `cmdCtx.newSession()` — has no explicit backend-routing integration. The `stage` hint flows to accounting but not to session-creation-time tool restriction. | Wire stage-aware tool filtering into `BackendConfig`; add `execute-phase` and `verify-phase` stage mappings where missing. |
+| **EXEC-02** Full autonomous orchestration on Copilot backend | Auto-mode (`auto/loop.ts` → `runUnit()`) creates sessions via `AgentSession.newSession()`, which rebuilds the full tool set every time. No per-unit tool allow-listing. No per-unit model override based on stage tier. | Add `toolFilter` and `modelOverride` to `BackendConfig` (or a new `UnitSessionConfig`); plumb them from `runUnit()` → `newSession()` → backend. |
+| **FLOW-01** Roadmap/requirements commands on Copilot backend | Remaining command handlers (roadmap, requirements) still call through the Pi-native `AgentSession.prompt()` path without explicit backend routing. | Extend `defaultBackend` settings plumbing to cover all command dispatch paths, not just plan/discuss. |
+| **FLOW-02** Free-tier 0× model fallback under quota pressure | `BudgetGuard` throws `BudgetExceededError` or warns, but does NOT trigger an automatic model downgrade. No downgrade path exists in the accounting layer. | Add a `BudgetPolicy` strategy that intercepts budget warnings and swaps the model to a 0× tier before the send. |
+| **FLOW-03** BYOK fallback when premium quota exhausted | `FallbackResolver` handles provider-level exhaustion and chain traversal, but has no integration with the Copilot backend `provider` config for BYOK session creation. BYOK sessions require a different `provider` block in `createSession()`. | Extend `CopilotSessionBackend.createSession()` to accept an optional `provider` override; wire `FallbackResolver` output into backend session config. |
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| `CopilotClient` | from SDK | Client lifecycle (start/stop, session factory) | Replaces `createAgentSession()` from `@gsd/pi-coding-agent`. Manages CLI process lifecycle, auto-restart on crash, connection state. Use `autoStart: false` for explicit control matching GSD's current startup sequence. **HIGH confidence** |
-| `session.createSession()` | from SDK | Per-workflow session with model, tools, hooks, agents | Maps to current `AgentSession`. Supports model selection, custom tools (via `defineTool`), MCP servers, custom agents, hooks, streaming, and BYOK provider config. **HIGH confidence** |
-| `session.sendAndWait()` | from SDK | Synchronous prompt-response for orchestration steps | Replaces current RPC `prompt()` + `waitForIdle()` pattern. Single call sends prompt and blocks until `session.idle`. Critical for headless/RPC orchestration. **HIGH confidence** |
-| Session Hooks (`onPreToolUse`, `onPostToolUse`, `onSessionStart`, `onSessionEnd`) | from SDK | Permission control, telemetry, tool restriction | Replaces current `ExtensionRunner` permission checks and tool filtering. Enables request-efficiency telemetry (count prompts, tool calls, duration per session). **HIGH confidence** |
-| Custom Agents (`customAgents` config) | from SDK | Sub-agent orchestration (researcher/editor pattern) | SDK supports defining lightweight sub-agents with own system prompts and tool restrictions. Runtime auto-delegates tasks. Maps to GSD's existing skill/command orchestration. **HIGH confidence** |
+---
 
-### Model Selection & Cost Optimization
+## Recommended Stack Additions
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| GitHub Copilot model routing | via SDK `model` param | Model selection per session | SDK accepts model names (`"gpt-5"`, `"claude-sonnet-4.5"`, `"gpt-4.1"`, etc.). Model multiplier determines premium request cost. **HIGH confidence** — official billing docs verified. |
-| 0× included models (GPT-5 mini, GPT-4.1, GPT-4o) | via SDK | Zero-cost operations for planning scaffolding, confirmations, triage | On paid plans, these models consume **zero** premium requests. Use for: discuss-phase Q&A, plan validation, progress checks, template generation. **HIGH confidence** — verified in GitHub billing docs (March 2026). |
-| 0.33× models (Claude Haiku 4.5, Gemini 3 Flash, GPT-5.1-Codex-Mini) | via SDK | Low-cost execution for routine code generation | Each prompt costs 0.33 premium requests. Use for: straightforward code edits, test generation, file operations. **HIGH confidence** |
-| 1× models (Claude Sonnet 4.5/4.6, Gemini 2.5/3/3.1 Pro, GPT-5.1, GPT-5.1-Codex) | via SDK | High-quality execution for complex reasoning | Each prompt costs 1 premium request. Use for: architecture decisions, complex refactors, multi-file changes, verification. **HIGH confidence** |
-| BYOK Provider (`provider` config) | from SDK | Fallback to direct API keys when quota exhausted | SDK supports `type: "openai"`, `type: "anthropic"`, `type: "azure"` providers with custom `baseUrl` and `apiKey`. Enables graceful degradation when premium requests run out. **HIGH confidence** — verified in SDK BYOK docs. |
+### Core Technologies — No New Dependencies
 
-### Existing Stack (Retained)
+No new npm packages are needed. All v1.1 features are implementable with the existing
+`@github/copilot-sdk` 0.2.0 + internal abstractions. The work is wiring, not importing.
 
-| Technology | Version | Purpose | Why Kept |
-|------------|---------|---------|----------|
-| Extension/Skill system | existing | Pluggable commands, workflows (GSD skills) | SDK's `skillDirectories` config maps directly. Custom tools via `defineTool` + Zod schemas. Minimal adaptation needed. |
-| `@modelcontextprotocol/sdk` | 1.27.1 | MCP tool registration | SDK has native MCP server support (`mcpServers` config). Can run both: GSD as MCP server (existing) AND connect to external MCP servers per session. |
-| Session persistence | existing files | `.gsd/agent/sessions/` | SDK has `resumeSession()` for continuing sessions. GSD session manager needs adapter to bridge. |
-| Zod | existing | Runtime validation, tool parameter schemas | SDK's `defineTool` accepts Zod schemas directly for parameters. Existing Zod usage maps perfectly. |
-| Web frontend (Next.js) | existing | Browser UI | Bridge service needs migration from Pi RPC to Copilot SDK events. Event types differ but map 1:1. |
-| TUI (`@gsd/pi-tui`) | existing | Terminal UI rendering | Decoupled from agent core. Receives events; event shape changes but rendering logic stays. |
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| `@github/copilot-sdk` | 0.2.0 (no change) | Session creation, tool bridging, model routing, BYOK provider config | Already installed. v1.1 uses existing SDK capabilities (`availableTools`, `provider` config, `model` param) that were not exercised in v1.0. No version bump required. **HIGH confidence** |
+| Node.js | 22 LTS (no change) | Runtime | No change. **HIGH confidence** |
+| TypeScript | 5.4+ (no change) | Compile target | No change. **HIGH confidence** |
 
-### Supporting Libraries (New or Changed)
+### Internal Abstractions — New or Extended
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `defineTool` (from SDK) | from SDK | Type-safe tool definitions with Zod params | Replace all current `AgentTool` definitions in `tools/index.ts` with SDK-compatible `defineTool`. Supports JSON-serializable returns or `ToolResultObject` for explicit control. |
-| SDK Hooks API | from SDK | Telemetry, permissions, context injection | Use `onPreToolUse` for tool allow-listing (replaces current extension permission system). Use `onSessionStart`/`onSessionEnd` for request-efficiency metrics. Use `onUserPromptSubmitted` for prompt counting. |
-| `approveAll` / custom `onPermissionRequest` | from SDK | Tool execution permission handling | `approveAll` for headless/auto mode. Custom handler for interactive mode with selective approval (shell, write, etc.). |
+These are NOT new packages. They are modifications to existing internal modules.
 
-## Migration Abstraction Layer
+| Module | File | Change | Why |
+|--------|------|--------|-----|
+| `BackendConfig` | `backend-interface.ts` | Add optional `availableToolNames?: string[]` and `provider?: ByokProviderConfig` fields | Enables per-session tool restriction (EXEC-01/02) and BYOK provider injection (FLOW-03) at the backend boundary |
+| `CopilotSessionBackend.createSession()` | `copilot-backend.ts` | Pass `availableToolNames` to SDK `tools` filtering; pass `provider` to SDK session config | Copilot SDK already supports `availableTools` and `provider` in its `createSession()` options — v1.0 just didn't wire them |
+| `BudgetGuard` | `budget-guard.ts` | Add `suggestDowngrade(): ModelSuggestion \| null` method that returns a 0× model when budget pressure >= warnThreshold | Enables FLOW-02 without changing the send path signature — callers check before sending |
+| `stage-router.ts` | `accounting/stage-router.ts` | Add missing stage keys: `"execute-phase"`, `"verify-phase"`, `"roadmap"`, `"requirements"` | Currently maps `"execute-task"` → standard and `"verify-work"` → free. The broader stage names used by auto-mode dispatch should also route correctly |
+| `FallbackResolver` | `fallback-resolver.ts` | Add `toByokConfig(): ByokProviderConfig \| null` that converts the resolved fallback model into the SDK's provider config shape | Bridges the existing fallback chain output to the BYOK session creation path |
+| `runUnit()` | `auto/run-unit.ts` | Accept `unitConfig?: { stage, toolFilter, modelHint }` and thread through `newSession()` | Auto-mode units currently pass only a prompt. Stage-aware config enables tool restriction and model routing per unit type |
+| `auto-dispatch.ts` | Dispatch rules | Add stage metadata to `DispatchAction` so each unit type carries its stage name | Currently dispatch produces a unitType + prompt. Adding `stage` lets `runUnit()` configure the backend appropriately |
 
-### Hybrid Runtime Interface
+---
 
-The migration requires an abstraction layer that lets GSD run against either Pi SDK or Copilot SDK during transition. Key interface:
+## Integration Points — How v1.1 Additions Connect to v1.0
 
-```typescript
-// Proposed: Runtime-agnostic session interface
-interface GsdRuntimeSession {
-  // Core operations
-  sendPrompt(prompt: string, options?: PromptOptions): Promise<string>;
-  sendAndWait(prompt: string, timeoutMs?: number): Promise<SessionResponse | null>;
-  
-  // Event subscription
-  on(handler: (event: GsdSessionEvent) => void): () => void;
-  
-  // Lifecycle
-  abort(): Promise<void>;
-  destroy(): Promise<void>;
-  
-  // State
-  readonly sessionId: string;
-  getMessages(): Promise<SessionMessage[]>;
-}
+### EXEC-01 + EXEC-02: Execute/Verify → Copilot Backend
 
-// Factory selects runtime based on config
-interface GsdRuntimeFactory {
-  createSession(config: GsdSessionConfig): Promise<GsdRuntimeSession>;
-}
+```
+auto-dispatch.ts                   auto/run-unit.ts                 AgentSession.newSession()
+┌─────────────┐                   ┌──────────────┐                 ┌─────────────────────┐
+│ DispatchRule │──stage,toolset──▶│  runUnit()   │──unitConfig──▶ │  newSession(opts)   │
+│ "execute"   │                   │  with stage  │                 │  → createSession()  │
+│ stage: exec │                   │  + toolFilter│                 │  w/ availableTools  │
+└─────────────┘                   └──────────────┘                 └─────────────────────┘
+                                                                            │
+                                                                            ▼
+                                                                   CopilotSessionBackend
+                                                                   .createSession(config)
+                                                                   ┌─────────────────────┐
+                                                                   │ SDK createSession({  │
+                                                                   │   model,             │
+                                                                   │   tools: filtered,   │
+                                                                   │   provider: byok?,   │
+                                                                   │ })                   │
+                                                                   └─────────────────────┘
 ```
 
-**Rationale:** GSD's existing consumers (CLI router, headless orchestrator, web bridge, RPC mode) all interact through `AgentSession`. A thin adapter over Copilot SDK's `CopilotSession` preserves all call sites while the migration proceeds. Switch the factory implementation per mode/phase — not the consumers.
+**Key insight:** `runUnit()` calls `s.cmdCtx!.newSession()` which goes to `AgentSession.newSession()` → rebuilds tools → calls `CopilotSessionBackend.createSession()`. The plumbing path already exists. What's missing is per-unit configuration flowing through this chain.
 
-### Tool Migration Pattern
+### FLOW-02: Free-Tier Fallback Path
 
-```typescript
-// Current Pi SDK tool (from packages/pi-coding-agent/src/core/tools/)
-const readTool: AgentTool = {
-  name: "read",
-  description: "Read file contents",
-  parameters: { /* JSON Schema */ },
-  execute: async (args) => { /* ... */ },
-};
-
-// Copilot SDK equivalent
-import { defineTool } from "@github/copilot-sdk";
-import { z } from "zod";
-
-const readTool = defineTool({
-  name: "read",
-  description: "Read file contents",
-  parameters: z.object({
-    file_path: z.string().describe("Absolute path to file"),
-    offset: z.number().optional().describe("Start line (1-based)"),
-    limit: z.number().optional().describe("Number of lines"),
-  }),
-  handler: async (args) => { /* same implementation */ },
-});
+```
+BudgetGuard.check()  ──quota pressure──▶  BudgetPolicy.suggestDowngrade()
+     │                                          │
+     │ "warning"                                 │ { model: "gpt-5-mini", tier: "free" }
+     ▼                                          ▼
+AccountingSessionHandle.send()     ──▶  CopilotSessionBackend override model
+                                          for this session
 ```
 
-### Event Mapping
+**Key insight:** The existing `BudgetGuard.check()` already detects quota pressure and returns `BudgetWarning`. Adding a `suggestDowngrade()` method lets the `AccountingSessionHandle` (or a new wrapper) swap models before the SDK `send()` call. The 0× models (GPT-5 mini, GPT-4.1, GPT-4o) are already mapped in `multipliers.ts`.
 
-| Pi SDK Event (`AgentSessionEvent`) | Copilot SDK Event (`SessionEvent`) | Notes |
-|-------------------------------------|-------------------------------------|-------|
-| `agent_event` (message start/delta/end) | `assistant.message` / `assistant.message.delta` | Delta only when `streaming: true` |
-| `tool_execution_start` | `tool.executionStart` | |
-| `tool_execution_end` | `tool.executionComplete` | |
-| `session_state_changed` | `session.idle` / `session.start` | |
-| `auto_compaction_start/end` | No direct equivalent | GSD must handle compaction externally or use SDK's context management |
-| `auto_retry_start/end` | `session.error` + retry logic | SDK has `autoRestart` for client-level crashes; retry logic may need custom implementation |
-| `fallback_provider_switch` | No direct equivalent | BYOK fallback must be orchestrated by GSD; SDK doesn't auto-fallback between providers |
+### FLOW-03: BYOK Fallback Path
 
-## Premium Request Optimization Strategy
+```
+FallbackResolver.findFallback()
+     │
+     │ FallbackResult { model, chainName }
+     ▼
+FallbackResolver.toByokConfig()
+     │
+     │ { type: "openai"|"anthropic"|"azure", baseUrl, apiKey }
+     ▼
+BackendConfig.provider = byokConfig
+     │
+     ▼
+CopilotSessionBackend.createSession()
+     │
+     │ SDK createSession({ provider: { type, baseUrl, apiKey } })
+     ▼
+Direct API call (no premium requests consumed)
+```
 
-### Model Tiering for GSD Workflows
+**Key insight:** `FallbackResolver` already resolves the next available model from user-configured chains. The gap is translating `FallbackResult` into the SDK's `provider` config shape and passing it through `BackendConfig` → `createSession()`.
 
-| GSD Workflow Stage | Recommended Model Tier | Multiplier | Rationale |
-|--------------------|-----------------------|------------|-----------|
-| `/gsd-discuss-phase` (Q&A, context gathering) | GPT-5 mini or GPT-4.1 | **0×** | Pure conversation, no code execution. Zero premium cost. |
-| `/gsd-plan-phase` (plan generation) | GPT-5 mini (draft) → GPT-5.1-Codex-Mini (refine) | **0× → 0.33×** | Generate plan skeleton free, refine with cheapest code model. |
-| `/gsd-execute-phase` (code generation, tool use) | Claude Sonnet 4.5 or GPT-5.1-Codex | **1×** | Complex reasoning requires premium model. One request per sub-agent task. |
-| `/gsd-verify-work` (UAT validation) | GPT-4.1 or GPT-5 mini | **0×** | Test execution and result checking don't need premium reasoning. |
-| `/gsd-autonomous` (full loop) | Mixed: 0× discuss → 0.33× plan → 1× execute → 0× verify | **varies** | Per-stage model routing maximizes value per premium request. |
-| Compaction / context management | GPT-5 mini | **0×** | Summarization for context window management. |
-| Error retry / fallback | Current model → BYOK fallback | **0× if BYOK** | When quota exhausted, fall back to direct API keys. |
+---
 
-### Key Optimization Patterns
+## Stage Router Additions
 
-1. **"Two-lane" routing:** Route exploration/confirmation to 0× models, execution to 1× models. Never run confirmations ("is this right?") on premium models.
+Current `STAGE_TIER_MAP` (from v1.0):
 
-2. **Session-per-task isolation (Ralph Loop):** Fresh session per phase/task. Clean context = fewer tokens = more efficient prompts. Avoid context bloat from long-lived sessions.
+```typescript
+// Already mapped
+"discuss-phase":  "free"      // 0×
+"verify-work":    "free"      // 0×
+"plan-check":     "low"       // 0.33×
+"validate-phase": "low"       // 0.33×
+"plan-phase":     "standard"  // 1×
+"research-phase": "standard"  // 1×
+"execute-task":   "standard"  // 1×
+```
 
-3. **`sendAndWait` over event polling:** Single round-trip per interaction. Eliminates wasted requests from polling/retry patterns.
+New entries for v1.1:
 
-4. **Tool allow-listing via hooks:** Use `onPreToolUse` to restrict tools per session type. Read-only sessions (research) should block write tools. Prevents wasted requests on tool-call errors.
+```typescript
+// Add for EXEC-01/EXEC-02/FLOW-01
+"execute-phase":    "standard"  // 1× — synonym used by auto-dispatch
+"verify-phase":     "free"      // 0× — synonym used by auto-dispatch
+"roadmap":          "low"       // 0.33× — structure generation
+"requirements":     "low"       // 0.33× — requirement management
+"complete-milestone": "free"    // 0× — bookkeeping after execution
+"run-uat":          "free"      // 0× — user acceptance test execution
+```
 
-5. **Auto model selection discount:** When model selection isn't critical, use `model: "auto"` for 10% multiplier discount (0.9 coefficient) on premium requests.
+---
 
-6. **Batch prompts, not chatty exchanges:** Combine context + instructions into single rich prompts rather than multi-turn conversations. Each `send()` is a billable request on premium models.
+## Tool Restriction Profiles
 
-### Anti-Patterns That Burn Premium Requests
+v1.1 needs per-session tool filtering to prevent wasted premium requests from tool-call errors.
 
-| Anti-Pattern | Cost Impact | Fix |
-|--------------|-------------|-----|
-| Running confirmations on Opus (30× fast mode) or Sonnet (1×) | 10 confirmations = 10-300 requests | Route to GPT-5 mini (0×) |
-| Long-lived sessions with growing context | More tokens → slower response → more requests for same work | Ralph Loop: fresh session per task |
-| Not using `sendAndWait` (manual idle polling) | Extra round-trips per interaction | Use `sendAndWait()` |
-| Hardcoding a premium model for all operations | All prompts cost 1×+ | Per-stage model routing |
-| Retrying failed prompts on same premium model | Double cost on failures | Catch errors, downgrade model or use BYOK |
-| Not filtering tools (model calls wrong tool, retries) | Wasted tool execution + retry | `availableTools` / `excludedTools` / `onPreToolUse` hook |
-| Forgetting the 10% auto-selection discount | Steady 10% waste | Use `"auto"` when model choice is flexible |
+| Session Type | Allowed Tools | Blocked Tools | Rationale |
+|-------------|---------------|---------------|-----------|
+| `execute-task` | All (read, write, edit, bash, lsp, Skill) | — | Full capability for code generation |
+| `verify-work` | read, bash, lsp | write, edit | Read-only verification — writing would be incorrect |
+| `discuss-phase` | read | write, edit, bash | Discussion only — no execution |
+| `plan-phase` | read, bash (read-only) | write, edit | Planning reads codebase, shouldn't modify |
+| `roadmap` | read, write | bash, edit | Writes planning files, no code execution |
+| `requirements` | read, write | bash, edit | Writes planning files, no code execution |
+
+**Implementation:** Add `availableToolNames` to `BackendConfig`. In `CopilotSessionBackend.createSession()`, filter the bridged tools list to only include allowed tools before passing to the SDK.
+
+---
 
 ## Alternatives Considered
 
-| Category | Recommended | Alternative | Why Not |
-|----------|-------------|-------------|---------|
-| Agent runtime | GitHub Copilot SDK | Keep Pi SDK (`@gsd/pi-agent-core` + `@gsd/pi-ai`) | Pi SDK requires managing auth, model routing, provider integrations, retry logic, compaction — all reimplemented. Copilot SDK handles these. Migration goal is specifically to Copilot SDK. |
-| Agent runtime | GitHub Copilot SDK | LangChain / LangGraph | Adds heavyweight dependency. Copilot SDK is purpose-built for GitHub ecosystem. Premium request billing is GitHub-native — no advantage to wrapping. |
-| Agent runtime | GitHub Copilot SDK | Vercel AI SDK | Good for web apps but not for CLI agent orchestration. No premium request integration. Different cost model. |
-| Model routing | SDK `model` param + custom tiering | OpenRouter | Adds intermediary. Premium requests already give multi-model access. BYOK covers fallback. |
-| Tool definitions | SDK `defineTool` + Zod | Keep Pi `AgentTool` format | `defineTool` is SDK-native, supports Zod directly, auto-serializes returns. Less glue code. |
-| Session persistence | Adapter over SDK `resumeSession` | Full rewrite of session manager | `resumeSession(sessionId)` preserves conversation state. Adapter layer cheaper than rewrite. |
-| Permission handling | SDK hooks (`onPermissionRequest`, `onPreToolUse`) | Keep extension permission system | Hooks are more flexible and first-class in SDK. Extension system can delegate to hooks. |
-| MCP integration | SDK `mcpServers` config | Standalone MCP server setup | SDK manages MCP server lifecycle per session. Less infrastructure code. |
-| BYOK fallback | SDK `provider` config (openai/anthropic/azure) | Maintain all direct provider SDKs | BYOK covers escape hatch. Can drop `@anthropic-ai/sdk`, `openai`, `@aws-sdk/*`, `@google/genai`, `@mistralai/mistralai` as direct dependencies after full migration. Significant dependency reduction. |
+| Recommended | Alternative | Why Not |
+|-------------|-------------|---------|
+| Extend `BackendConfig` with `availableToolNames` | Use SDK `excludedTools` config | `availableToolNames` is an allow-list (safer default-deny) vs SDK's `excludedTools` block-list. Allow-listing prevents new tools from accidentally being available in restricted sessions. |
+| Add `BudgetPolicy.suggestDowngrade()` | Auto-switch model inside `BudgetGuard.check()` | Side-effectful budget checks violate single-responsibility. `suggestDowngrade()` returns a suggestion; the caller decides whether to apply it. Testable and predictable. |
+| Thread `ByokProviderConfig` through `BackendConfig` | Create a separate `ByokSessionBackend` | Separate backend doubles code paths. The SDK already handles BYOK via `provider` config in `createSession()` — passing it through `BackendConfig` is one added field. |
+| Add stage metadata to `DispatchAction` | Look up stage from unitType in `runUnit()` | Lookup creates a second source of truth. Stage on the dispatch action is declarative and matches the dispatch rules table pattern. |
+| Keep `@github/copilot-sdk` at 0.2.0 | Upgrade to latest | v1.1 features need no new SDK capabilities. Upgrading mid-milestone adds unnecessary risk. Pin for stability; bump at next milestone boundary. |
+
+---
+
+## What NOT to Add
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| New LLM provider SDKs (`openai`, `@anthropic-ai/sdk`, etc.) | BYOK goes through Copilot SDK's `provider` config — no direct provider SDK needed | `provider: { type: "openai", baseUrl, apiKey }` in session config |
+| Session pooling library | Auto-mode already uses one-shot Ralph Loop sessions (fresh per unit). Pooling adds complexity with no benefit for the one-session-per-unit model | Keep `newSession()` per unit |
+| External rate limiting / token bucket library | `BudgetGuard` + `RequestTracker` already track usage. Model downgrade is a policy decision, not a rate limit | Extend `BudgetGuard` with `suggestDowngrade()` |
+| New testing framework | Existing vitest + parity suite infrastructure from v1.0 covers unit + integration | Extend parity suites for execute/verify/auto stages |
+| Workflow engine / state machine library | `auto/loop.ts` already is a declarative state machine (dispatch rules → guards → run → finalize). Adding a library would require rewriting working code | Keep existing auto-loop architecture |
+
+---
+
+## Version Compatibility
+
+| Package | Compatible With | Notes |
+|---------|-----------------|-------|
+| `@github/copilot-sdk@0.2.0` | Node.js 18+ | Currently on Node 22 LTS. No issues. |
+| `@github/copilot-sdk@0.2.0` | TypeScript 5.4+ | SDK ships `.d.ts` types. Compatible with existing strict-mode tsconfig. |
+| `@github/copilot-sdk@0.2.0` | Zod 3.x | `defineTool` accepts Zod schemas. Existing Zod version compatible. |
+| `@github/copilot-sdk@0.2.0` | `approveAll` | Used for headless/auto-mode permission bypass. No changes needed. |
+
+---
 
 ## Installation
 
 ```bash
-# Core — new dependency
-npm install @github/copilot-sdk
-
-# Copilot CLI — required backend (must be in PATH)
-npm install -g @anthropic-ai/copilot-cli  # or via GitHub CLI:
-# gh extension install github/copilot-cli
-
-# Existing — retained as-is
-# npm install zod (already present)
-# npm install @modelcontextprotocol/sdk (already present)
-
-# Existing — candidates for removal after full migration
-# @anthropic-ai/sdk, @anthropic-ai/vertex-sdk
-# openai
-# @aws-sdk/client-bedrock-runtime
-# @google/genai
-# @mistralai/mistralai
-# (These become unnecessary when all model routing goes through Copilot SDK)
+# No new packages required for v1.1.
+# All changes are internal wiring against existing @github/copilot-sdk@0.2.0.
 ```
-
-## Migration Phases (Stack Perspective)
-
-### Phase 1: SDK Bootstrap + Adapter Layer
-- Install `@github/copilot-sdk`
-- Create `GsdRuntimeSession` adapter interface
-- Implement Copilot SDK adapter (`CopilotRuntimeSession`)
-- Wire `CopilotClient` lifecycle into GSD startup/shutdown
-- **Stack change:** Add `@github/copilot-sdk` dependency. No removals yet.
-
-### Phase 2: Tool Migration
-- Convert `AgentTool` definitions to `defineTool` format with Zod schemas
-- Map existing tool names to SDK tool registration
-- Verify tool execution parity via hooks
-- **Stack change:** Tools dual-registered (Pi + Copilot format). No removals.
-
-### Phase 3: Session & Model Routing
-- Implement per-workflow model tiering (0×/0.33×/1× routing)
-- Add request-efficiency telemetry via session hooks
-- Migrate headless orchestrator to `sendAndWait` pattern
-- Implement BYOK fallback on quota exhaustion
-- **Stack change:** Model routing logic moves from `ModelRegistry` to SDK config. Pi `ModelRegistry` retained for hybrid mode.
-
-### Phase 4: Extension System Bridge
-- Map GSD skills/extensions to SDK `skillDirectories` and `customAgents`
-- Bridge extension UI requests to SDK event system
-- Migrate permission handling to SDK hooks
-- **Stack change:** Extension loader gets SDK compatibility layer.
-
-### Phase 5: Consumer Migration
-- Migrate CLI interactive mode to Copilot SDK sessions
-- Migrate web bridge RPC to SDK events
-- Migrate MCP server mode to SDK integration
-- **Stack change:** Start removing Pi SDK imports from consumer code.
-
-### Phase 6: Pi SDK Removal
-- Remove `@gsd/pi-agent-core`, `@gsd/pi-ai` agent-loop code (retain data types if needed)
-- Remove direct LLM provider SDKs (`@anthropic-ai/sdk`, `openai`, etc.)
-- Remove hybrid adapter layer
-- **Stack change:** Major dependency reduction. Single runtime path.
-
-## SDK Status & Risk Assessment
-
-| Factor | Status | Risk | Mitigation |
-|--------|--------|------|------------|
-| SDK maturity | Technical preview (since Jan 22, 2026) | **MEDIUM** — Breaking changes expected | Adapter layer isolates breaking changes to one file. Pin SDK version per milestone. |
-| Protocol version | v2 (requires CLI v0.0.392+ via npm) | **LOW** — Well-documented | Install CLI via npm, not winget/brew (ensures protocol v2). |
-| Premium request billing | GA (since June 2025) | **HIGH** — Quota constraints are real | Per-stage model routing + BYOK fallback + telemetry monitoring. |
-| BYOK support | Available | **LOW** | Supports OpenAI, Anthropic, Azure, Ollama (local). Proven escape hatch. |
-| MCP integration | Native in SDK | **LOW** | Direct `mcpServers` config per session. |
-| Custom agents | Supported | **MEDIUM** — Auto-inference behavior may be unpredictable | Use `infer: false` for dangerous agents. Test delegation patterns. |
-| Session persistence | `resumeSession(id)` available | **MEDIUM** — May not map 1:1 to GSD's session format | Adapter layer translates. May need dual-write during transition. |
-| Windows support | Known issues (protocol/CLI install) | **LOW** for GSD — primary Linux/macOS | Test Windows CI path with npm-installed CLI. |
-
-## Confidence Assessment
-
-| Area | Confidence | Reason |
-|------|------------|--------|
-| SDK API surface | **HIGH** | Verified via Context7 + official repo docs + .instructions.md |
-| Premium request billing model | **HIGH** | Verified via GitHub official billing docs + community reports |
-| Model multiplier rates | **HIGH** | Directly from docs.github.com/en/copilot/concepts/billing/copilot-requests (March 2026) |
-| BYOK capability | **HIGH** | Verified in SDK docs — OpenAI, Anthropic, Azure providers confirmed |
-| Migration adapter pattern | **MEDIUM** | Architecture pattern is sound but SDK preview may introduce friction |
-| Dependency removal timeline | **MEDIUM** | Feasible after full migration but may need provider SDKs retained for edge cases |
-| SDK stability for production | **LOW** | Technical preview with known issues. Breaking changes between versions expected. |
-| Compaction/context management | **LOW** | SDK doesn't expose compaction primitives. GSD may need to retain custom compaction logic. |
-
-## Sources
-
-- Context7 `/github/copilot-sdk` — SDK documentation and code examples (HIGH authority)
-- GitHub Blog: "Build an agent into any app with the GitHub Copilot SDK" — https://github.blog/news-insights/company-news/build-an-agent-into-any-app-with-the-github-copilot-sdk/ (HIGH)
-- GitHub Docs: "Requests in GitHub Copilot" — https://docs.github.com/en/copilot/concepts/billing/copilot-requests (HIGH)
-- GitHub Copilot SDK repository — https://github.com/github/copilot-sdk (HIGH)
-- GitHub Copilot SDK issues #115, #118 — Known issues with billing and protocol versions (MEDIUM)
-- SmartScope: "GitHub Copilot Premium Request Optimization" — https://smartscope.blog/en/generative-ai/github-copilot/github-copilot-premium-request-optimization/ (MEDIUM)
-- GSD 2 codebase analysis: `.planning/codebase/STACK.md`, `.planning/codebase/ARCHITECTURE.md` (HIGH — primary source)
-- `.github/instructions/copilot-sdk-nodejs.instructions.md` — Local SDK reference (HIGH)
 
 ---
 
-*Stack research: 2026-03-24*
+## Sources
+
+- **Codebase inspection** (HIGH confidence):
+  - `backend-interface.ts` — `BackendConfig`, `SessionBackend` interfaces
+  - `copilot-backend.ts` — `CopilotSessionBackend.createSession()` implementation
+  - `stage-router.ts` — `STAGE_TIER_MAP`, `resolveEffectiveTier()`
+  - `budget-guard.ts` — `BudgetGuard.check()`, `BudgetExceededError`
+  - `multipliers.ts` — Model tier mappings
+  - `fallback-resolver.ts` — `FallbackResolver.findFallback()`, chain traversal
+  - `run-unit.ts` — `runUnit()` session-per-unit pattern
+  - `auto-dispatch.ts` — `DISPATCH_RULES`, `DispatchAction`
+
+- **Context7 — GitHub Copilot SDK docs** (HIGH confidence):
+  - Library ID: `/websites/github_en_copilot` — session lifecycle, streaming, tools, events, hooks
+  - Library ID: `/github/copilot-cli` — custom agents, skills, tool permissions, CLI flags
+
+- **v1.0 STACK.md** (HIGH confidence):
+  - BYOK provider config shape: `type: "openai" | "anthropic" | "azure"` with `baseUrl` and `apiKey`
+  - Model tiering: 0× (GPT-5 mini, GPT-4.1, GPT-4o), 0.33× (Claude Haiku 4.5, Gemini 3 Flash), 1× (Claude Sonnet 4.5/4.6, GPT-5.1)
+  - SDK `availableTools` / `excludedTools` config for tool restriction per session
+
+---
+*Stack research for: GSD 2 v1.1 — execute/verify, autonomous orchestration, fallback layers*
+*Researched: 2026-03-25*
