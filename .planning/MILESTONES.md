@@ -1,5 +1,32 @@
 # Milestones
 
+## v1.1 Next Steps (Shipped: 2026-03-26)
+
+**Delivered:** Completed the Copilot SDK migration for execute/verify workflows, autonomous orchestration, command coverage, and cost-safety fallbacks (free-tier + BYOK), then closed all audit and Nyquist compliance gaps.
+
+**Phases completed:** 8 phases (8-15), 16 plans total
+
+**Key accomplishments:**
+
+- Execute/verify workflows now run through Copilot backend with settings-driven routing and full dispatch coverage (EXEC-01).
+- Autonomous orchestration now threads per-unit stage/tool config through dispatch, runUnit, and session setup (EXEC-02).
+- Roadmap and requirements command flows are fully routed through Copilot backend stages (FLOW-01).
+- Free-tier downgrade and BYOK fallback are wired into session creation, including user-visible accounting telemetry (FLOW-02, FLOW-03).
+- GAP closures delivered in Phases 13-15: fixed `setSettingsManager` wiring, wired telemetry consumers, and brought phases 08-12 to Nyquist-compliant VALIDATION status.
+
+**Stats:**
+
+- 102 files changed
+- +12,128 / -96 lines
+- 8 phases, 16 plans
+- 2 days from start to ship (2026-03-25 -> 2026-03-26)
+
+**Git range:** `feat(08-01)` -> `feat(15-02)`
+
+**What's next:** Define v1.2 scope and requirements with `/gsd-new-milestone`.
+
+---
+
 ## v1.0 Copilot SDK Migration (Shipped: 2026-03-25)
 
 **Phases completed:** 7 phases, 17 plans, 20 tasks

@@ -1,30 +1,30 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Next Steps
-status: Phase 15 Complete
-stopped_at: Completed 15-02-PLAN.md
-last_updated: "2026-03-26T20:10:00.000Z"
+milestone: v1.2
+milestone_name: TBD
+status: v1.1 Archived
+stopped_at: Milestone closeout complete
+last_updated: "2026-03-26T21:00:00.000Z"
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 16
-  completed_plans: 16
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-25)
+See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** Deliver the same reliable GSD workflow outcomes while using fewer, higher-value premium requests per completed unit of work.
-**Current focus:** Phase 15 — nyquist-compliance-audit (COMPLETE — all 8 phases done)
+**Current focus:** Awaiting next milestone definition (`/gsd-new-milestone`)
 
 ## Current Position
 
-Phase: 15 (nyquist-compliance-audit) — COMPLETE ✅
-Plan: 2 of 2 (all complete)
+Phase: none
+Plan: none
 
 ## Performance Metrics
 
@@ -92,18 +92,15 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Plan gap closure for missing `execute-phase` and `verify-work` CLI dispatch in `src/cli.ts`
-- Wire `resolvePlanningBackendFromSettings()` into execute/verify dispatch paths
+- Define v1.2 requirements and roadmap
+- Select next hardening priorities from archived v1.1 technical debt
 
 ### Blockers/Concerns
 
-- Phase 08 verification found 3 roadmap gaps: no `gsd execute-phase` CLI command, no `gsd verify-work` CLI command, and no settings-driven backend routing for execute/verify
-- Auto-mode newSession() rebuilds full tool set — per-unit tool restriction must thread through without breaking extension rebuild logic (EXEC-02)
-- SDK provider config runtime behavior for BYOK auth failure mid-session needs runtime testing (FLOW-03)
-- Budget threshold tuning for suggestDowngrade() needs user testing to calibrate UX (FLOW-02)
+- No active blockers. Milestone v1.1 shipped and archived.
 
 ## Session Continuity
 
 Last session: 2026-03-26T14:41:15.451Z
-Stopped at: Completed 11-02-PLAN.md
+Stopped at: Milestone v1.1 archival complete
 Resume file: None
