@@ -7,6 +7,8 @@ import {
 	getMultiplierValue,
 	getStageMultiplierTier,
 } from "./accounting/index.js";
+import { suggestDowngrade } from "./accounting/downgrade.js";
+import type { DowngradeSuggestion } from "./accounting/downgrade.js";
 import type { BackendConfig, BackendSessionHandle, SendOptions, SessionBackend } from "./backend-interface.js";
 import { CopilotClientManager } from "./copilot-client-manager.js";
 import type { CopilotSessionEvent } from "./event-translator.js";
@@ -112,6 +114,7 @@ export class CopilotSessionBackend implements SessionBackend {
 
 	private accountingConfig?: AccountingConfig;
 	private _currentTracker?: RequestTracker;
+	private _downgrades: Array<{ originalModel: string; downgradedTo: string; percentUsed: number }> = [];
 
 	constructor(clientManager: CopilotClientManager) {
 		this.clientManager = clientManager;
@@ -125,47 +128,95 @@ export class CopilotSessionBackend implements SessionBackend {
 		return this._currentTracker;
 	}
 
+	getDowngrades(): Array<{ originalModel: string; downgradedTo: string; percentUsed: number }> {
+		return this._downgrades;
+	}
+
+	/**
+	 * Pre-flight downgrade check (D-03). Evaluates budget state and
+	 * substitutes the requested model with a 0× model if under pressure.
+	 * Returns the (possibly modified) config and the suggestion, or null if no downgrade.
+	 */
+	private _applyDowngradeIfNeeded(config: BackendConfig): {
+		config: BackendConfig;
+		downgrade: DowngradeSuggestion | null;
+	} {
+		if (!this.accountingConfig || !this._currentTracker) {
+			return { config, downgrade: null };
+		}
+		const budgetState = this._currentTracker.getState();
+		const suggestion = suggestDowngrade(budgetState, this.accountingConfig);
+		if (!suggestion) {
+			return { config, downgrade: null };
+		}
+		// Override model in config (D-07: new sessions only, not mid-send)
+		const downgradedConfig: BackendConfig = {
+			...config,
+			model: suggestion.modelId,
+		};
+		this._downgrades.push({
+			originalModel: config.model ?? "default",
+			downgradedTo: suggestion.modelId,
+			percentUsed: suggestion.percentUsed,
+		});
+		return { config: downgradedConfig, downgrade: suggestion };
+	}
+
 	async initialize(): Promise<void> {
 		await this.clientManager.start();
 	}
 
 	async createSession(config: BackendConfig): Promise<BackendSessionHandle> {
+		const { config: effectiveConfig, downgrade } = this._applyDowngradeIfNeeded(config);
+		if (downgrade) {
+			// D-06: No silent fallback — emit structured notification
+			process.stderr.write(
+				`[gsd:accounting] ⚠ Model downgraded: ${config.model ?? "default"} → ${downgrade.modelId} (${downgrade.reason})\n`,
+			);
+		}
 		const client = this.clientManager.getClient();
-		const sdkTools = bridgeAllTools(config.tools, {});
+		const sdkTools = bridgeAllTools(effectiveConfig.tools, {});
 		const sessionConfig = {
-			model: config.model,
-			streaming: config.streaming ?? true,
+			model: effectiveConfig.model,
+			streaming: effectiveConfig.streaming ?? true,
 			tools: sdkTools,
 			onPermissionRequest: approveAll,
-			sessionId: config.sessionId,
-			workingDirectory: config.cwd,
-			configDir: config.configDir,
+			sessionId: effectiveConfig.sessionId,
+			workingDirectory: effectiveConfig.cwd,
+			configDir: effectiveConfig.configDir,
 			infiniteSessions: { enabled: true },
-			...(config.systemMessage ? { systemMessage: { content: config.systemMessage } } : {}),
+			...(effectiveConfig.systemMessage ? { systemMessage: { content: effectiveConfig.systemMessage } } : {}),
 		};
 
 		const session = await client.createSession(sessionConfig);
 		const rawHandle = new CopilotSessionHandle(session);
 
 		if (this.accountingConfig) {
-			const sessionId = config.sessionId ?? rawHandle.sessionId;
+			const sessionId = effectiveConfig.sessionId ?? rawHandle.sessionId;
 			const tracker = new RequestTracker(sessionId, this.accountingConfig.budgetLimit);
 			const guard = new BudgetGuard(this.accountingConfig, tracker);
 			this._currentTracker = tracker;
-			return new AccountingSessionHandle(rawHandle, tracker, guard, config.model ?? "unknown", config.stage ?? "unknown");
+			return new AccountingSessionHandle(rawHandle, tracker, guard, effectiveConfig.model ?? "unknown", effectiveConfig.stage ?? "unknown");
 		}
 
 		return rawHandle;
 	}
 
 	async resumeSession(sessionId: string, config: BackendConfig): Promise<BackendSessionHandle> {
+		const { config: effectiveConfig, downgrade } = this._applyDowngradeIfNeeded(config);
+		if (downgrade) {
+			// D-06: No silent fallback — emit structured notification
+			process.stderr.write(
+				`[gsd:accounting] ⚠ Model downgraded: ${config.model ?? "default"} → ${downgrade.modelId} (${downgrade.reason})\n`,
+			);
+		}
 		const client = this.clientManager.getClient();
-		const sdkTools = bridgeAllTools(config.tools, {});
+		const sdkTools = bridgeAllTools(effectiveConfig.tools, {});
 		const session = await client.resumeSession(sessionId, {
 			tools: sdkTools,
 			onPermissionRequest: approveAll,
-			workingDirectory: config.cwd,
-			configDir: config.configDir,
+			workingDirectory: effectiveConfig.cwd,
+			configDir: effectiveConfig.configDir,
 			infiniteSessions: { enabled: true },
 		});
 		const rawHandle = new CopilotSessionHandle(session);
@@ -174,7 +225,7 @@ export class CopilotSessionBackend implements SessionBackend {
 			const tracker = new RequestTracker(sessionId, this.accountingConfig.budgetLimit);
 			const guard = new BudgetGuard(this.accountingConfig, tracker);
 			this._currentTracker = tracker;
-			return new AccountingSessionHandle(rawHandle, tracker, guard, config.model ?? "unknown", config.stage ?? "unknown");
+			return new AccountingSessionHandle(rawHandle, tracker, guard, effectiveConfig.model ?? "unknown", effectiveConfig.stage ?? "unknown");
 		}
 
 		return rawHandle;

@@ -62,7 +62,7 @@ function makeBackendHarness() {
 function makeAccountingBackend() {
   const harness = makeBackendHarness();
   const backend = new CopilotSessionBackend(harness.manager as any);
-  backend.setAccountingConfig({ budgetLimit: 300, warnThreshold: 0.8, hardStop: true });
+  backend.setAccountingConfig({ budgetLimit: 300, warnThreshold: 0.8, hardStop: true, freeTierFallback: { enabled: false, thresholdPolicy: "warn" } });
   return { backend, harness };
 }
 

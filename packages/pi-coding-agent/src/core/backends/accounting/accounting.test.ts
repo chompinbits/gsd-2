@@ -252,7 +252,7 @@ describe("BudgetGuard", () => {
     for (let i = 0; i < existingCost; i++) {
       tracker.record("claude-sonnet-4-6", "execute-task", "standard");
     }
-    const config = { budgetLimit, warnThreshold, hardStop };
+    const config = { budgetLimit, warnThreshold, hardStop, freeTierFallback: { enabled: false, thresholdPolicy: "warn" as const } };
     return new BudgetGuard(config, tracker);
   }
 
@@ -400,7 +400,7 @@ describe("loadAccountingConfig", () => {
 
 describe("mergeWithCliOverrides", () => {
   it("applies defined overrides over config", () => {
-    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true, freeTierFallback: { enabled: false, thresholdPolicy: "warn" as const } };
     const result = mergeWithCliOverrides(base, { budgetLimit: 500 });
     assert.equal(result.budgetLimit, 500);
     assert.equal(result.warnThreshold, 0.8); // unchanged
@@ -408,20 +408,20 @@ describe("mergeWithCliOverrides", () => {
   });
 
   it("ignores undefined override values (does not clobber config)", () => {
-    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true, freeTierFallback: { enabled: false, thresholdPolicy: "warn" as const } };
     const result = mergeWithCliOverrides(base, { budgetLimit: undefined });
     assert.equal(result.budgetLimit, 300); // not overridden
   });
 
   it("returns a new object (immutable merge)", () => {
-    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true, freeTierFallback: { enabled: false, thresholdPolicy: "warn" as const } };
     const result = mergeWithCliOverrides(base, { budgetLimit: 100 });
     assert.notEqual(result, base);
     assert.equal(base.budgetLimit, 300); // original unchanged
   });
 
   it("applies all three overrides together", () => {
-    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true };
+    const base = { budgetLimit: 300, warnThreshold: 0.8, hardStop: true, freeTierFallback: { enabled: false, thresholdPolicy: "warn" as const } };
     const result = mergeWithCliOverrides(base, {
       budgetLimit: 100,
       warnThreshold: 0.5,
