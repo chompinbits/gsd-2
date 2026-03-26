@@ -61,7 +61,7 @@ Plans:
 
 Plans:
 - [x] 09-01-PLAN.md — UnitSessionConfig types, stage/tool maps, dispatch-to-session wiring
-- [ ] 09-02-PLAN.md — Automated tests for tool profiles, stage routing, and config threading
+- [x] 09-02-PLAN.md — Automated tests for tool profiles, stage routing, and config threading
 
 ### Phase 10: Command Coverage Completion
 **Goal**: Users can run roadmap and requirements management commands fully through Copilot SDK backend
