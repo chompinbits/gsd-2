@@ -136,6 +136,10 @@ Plans:
   1. `getDowngrades()` return value is passed to `formatPremiumSummary` at session teardown or equivalent call site
   2. `getByokActivations()` return value is passed to `formatPremiumSummary` at session teardown or equivalent call site
   3. Structured telemetry report is reachable in production path for both downgrade and BYOK events
+**Plans:** 1 plan
+
+Plans:
+- [ ] 14-01-PLAN.md — Wire getDowngrades()/getByokActivations() into formatPremiumSummary at session teardown + source-shape tests
 
 ### Phase 15: Nyquist Compliance Audit
 **Goal**: All v1.1 phases have valid VALIDATION.md files reflecting actual post-execution compliance status
